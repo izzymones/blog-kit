@@ -1,0 +1,13 @@
+Installation notes:
+
+I needed to install brew, ruby, fswatch and some dependencies.  Found the jekyll install page helpful.
+
+https://jekyllrb.com/docs/installation/macos/
+
+had some issues with ruby versions.  currently using 3.1.2 but had to go into the cb directory and run
+
+bundle add webrick
+
+its a bundle that is no longer automatically included.
+
+
