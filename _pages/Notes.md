@@ -20,11 +20,11 @@ If you already have a server running it will complain.  I do this all the time a
 ## Saving your changes
 
 ##### Seeing current changes
-You can see all files that have been changed by going to the `git/blog-kit` directory and typing
+You can see all the changes you've made to your blog by going to the `git/blog-kit` directory and typing
 ```
 git status
 ```
-You'll see two kinds of changes.  Any files you've changed will be listed as `modified` and in red you'll see `untracked` files. Untracked files are files that you've added.  For example, maybe you made a new page about rockclimbing and saved it in the `_pages` directory.  
+You'll see two kinds of changes.  In green, files you've changed will be listed as `modified` and in red you'll see `untracked` files. Untracked files are files that you've added to your project by creating and saving the files, but you haven't yet told git to track them.  For example, maybe you made a new page about rockclimbing and saved it in the `_pages` directory. You will also need to `add` them to git to tell git to track them.
 
 ##### Adding new files
 If you create a whole new file to add to your blog then you'll need to add it to the git repo.  This tells git that you want to track this file and any changes that occur to it.  You can do this with 
@@ -75,6 +75,7 @@ $$\lim_{h \to 0} \frac{f(x) - f(x+h)}{h}$$
 - set up ssh key so Izzy doesn't have to keep entering his password
 - do some basic formatting changes so it doesn't drive me crazy.  I think I can just copy over my local css
 - merge some of the changes to my layout pages so Izzy can easity add header pictures for his pages.
+- check out the font errors
 
 ## Miscellaneous 
 
