@@ -1,0 +1,54 @@
+<!-- Page Header -->
+{% if page.header == 'none' %}
+<header id="header-wrapper" class="masthead noheader">
+</header>  
+  {% if page.lesson %}
+    <ul class="tabrow">
+      {% for pg in site.lessons[ page.lesson ] %}
+        {% if pg.url == page.url %}
+          <li class="selected"><a href="{{ pg.url | relative_url }}">{{ pg.name }}</a></li>
+        {% else %}
+          <li><a href="{{ pg.url | relative_url }}">{{ pg.name }}</a></li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% else %}
+
+
+{% if page.background %}
+<header id="header-wrapper" class="masthead" style="background-image: url('{{ page.background | prepend: site.baseurl | replace: '//', '/' }}')">
+{% else %}
+<header id="header-wrapper" class="masthead">
+{% endif %}
+
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+
+        <!-- test for a narrow header -->
+        {% if page.header == 'narrow' %}
+        <div class="post-heading narrow-heading">
+        {% else %}
+        <div class="post-heading">
+        {% endif %}
+
+          <h1>{{ page.title }}</h1>
+          {% if page.subtitle %}
+          <span class="subheading">{{ page.subtitle }}</span>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if page.headerapp %}
+  <div id="header-app" class="app-wrapper">
+  </div>
+  <script src="{{ page.headerapp  | prepend: 'xxx/assets/libs/' }}"></script>
+  {% endif %}
+
+</header>
+{% endif %}

@@ -1,13 +1,23 @@
 <!-- Navigation -->
+{% if page.header == 'none' %}
+<nav class="noheadernavbar navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+{% else %}
 <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+{% endif %}
   <div class="container">
-    <a class="navbar-brand" href="{{"/" | relative_url }}">{{ site.title | escape }}</a>
+    <a class="navbar-brand" href="{{"/" | relative_url }}">  
+      <img src="{{"/assets/images/wildthinksLogo.svg" | relative_url }}" height="30">
+    </a>
     <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
       Menu
       <i class="fa fa-bars"></i>
     </button>
     <div class="collapse navbar-collapse" id="navbarResponsive">
+      {% if page.header == 'none' %}
+      <ul class="noheadernav navbar-nav ml-auto">
+      {% else %}
       <ul class="navbar-nav ml-auto">
+      {% endif %}
         <li class="nav-item">
           <a class="nav-link" href="{{"/" | relative_url }}">Home</a>
         </li>
@@ -15,10 +25,7 @@
           <a class="nav-link" href="{{"/pages/About/" | relative_url }}">About</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ "/posts" | relative_url }}">Posts</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{{"/contact" | relative_url }}">Contact</a>
+          <a class="nav-link" href="{{ "/posts" | relative_url }}">Blog</a>
         </li>
       </ul>
     </div>

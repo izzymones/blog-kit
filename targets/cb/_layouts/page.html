@@ -2,28 +2,7 @@
 layout: default
 ---
 
-<!-- Page Header -->
-{% if page.background %}
-<header
-  class="masthead {% if page.abk == true %}masthead-abk{% endif %}"
-  style="background-image: url('{{ page.background | prepend: site.baseurl | replace: '//', '/' }}')">
-{% else %}
-<header class="masthead {% if page.abk == true %}masthead-abk{% endif %}">
-{% endif %}
-  <div class="overlay"></div>
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-8 col-md-10 mx-auto">
-        <div class="page-heading">
-          <h1>{{ page.title }}</h1>
-          {% if page.description %}
-          <span class="subheading">{{ page.description }}</span>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-  </div>
-</header>
+{% include masthead.html %}
 
 {% if page.smartdown == true %}
   <div id="smartdown-outer-container"class="container-fluid smartdown-outer-container smartdown-theme-blogx">

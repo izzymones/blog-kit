@@ -4,7 +4,7 @@
 
 @import "styles";
 
-header {
+/**header {
 	&.masthead {
 		margin-bottom: 0;
 
@@ -17,6 +17,72 @@ header {
 		}
 	}
 }
+**/
+
+h1, h2, h3, h4, h5, h6, p, body {
+  font-family: 'Asap', 'Open Sans', Arial, sans-serif !important;
+}
+
+/*************************************************************************
+  PAGE HEADERS:
+  - first we adjust the main header
+  - we add a narrow header
+  - and a no header option
+**************************************************************************/
+
+header.masthead  {
+  background-color: transparent !important;
+  .post-heading  {
+    .subheading {
+      font-weight: 600;
+      font-size: 24px;
+      @media only screen and (max-width: 768px) {
+        font-weight: 200;
+        font-size: 18px;
+      }
+    }
+    img {
+      height: 150px;
+      @media only screen and (max-width: 768px) {
+        height: 80px;
+      }
+    }
+  }
+}
+
+.narrow-heading {
+ 	padding: 80px 0 60px 0 !important;
+	@media only screen and (min-width: 768px) {
+  		padding: 80px 0 60px 0 !important;
+	}
+ }
+
+.noheader {
+  margin-bottom: 60px !important;
+}
+
+// the navigation menu needs to stay dark when there's no header
+.noheadernav {
+  a {
+      color: #444 !important;
+    }
+}
+
+.noheadernavbar {
+  background-color: transparent !important;
+  border-bottom: none !important;
+}
+
+// this wrapper allows us to put an app in the background of header
+.app-wrapper {
+	position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: -1 !important;
+}
+
 
 
 #smartdown-outer-container.smartdown-outer-container {
