@@ -15,7 +15,7 @@ description: A simulation of the Two Body Problem
 
 [Start](:=start=true) [Reset](:=reset=true)[Add Particle:](:Xparticle)
 
-```p5js /autoplay
+```javascript /p5js/autoplay
 smartdown.setVariable('mass1',11);
 smartdown.setVariable('mass2',18);
 smartdown.setVariable('start',false);
