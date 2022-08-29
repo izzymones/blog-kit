@@ -1,25 +1,20 @@
 ---
 title: Two Body Problem
 smartdown: true
-header: 'none'
+header: 'narrow'
 description: A simulation of the Two Body Problem
 ---
-28 39
-23 33
 
-**mass1** [](:?mass1|number) [](:-mass1/1/50/1)
+**Star Mass 1** [](:?mass1|number) [](:-mass1/1/50/1)
 
-**mass2** [](:?mass2|number) [](:-mass2/1/50/1)
-
-**framerate** [](:?framerate|number) [](:-framerate/1/100/1)
+**Star Mass 2** [](:?mass2|number) [](:-mass2/1/50/1)
 
 [Start](:=start=true) [Reset](:=reset=true)[Add Particle:](:Xparticle)
 
 ```javascript /p5js/autoplay
-smartdown.setVariable('mass1',11);
-smartdown.setVariable('mass2',18);
+smartdown.setVariable('mass1',10);
+smartdown.setVariable('mass2',30);
 smartdown.setVariable('start',false);
-smartdown.setVariable('framerate',100);
 smartdown.setVariable('particle',false);
 let plocked = false;
 let s1locked = false;
@@ -145,11 +140,14 @@ let widthPercent = 0.8;  // what percentage of the page width should the app get
 let heightPercent = 0.7; // what percentage of the page height should the app get
 
 p5.setup = function() {
-    p5.frameRate(env.framerate);
+    p5.frameRate(30);
     p5.createCanvas(widthPercent*window.innerWidth, heightPercent*window.innerHeight);
     s1 = new Star((p5.width / 2)-60, p5.height / 2, 0, 1,env.mass1);
     s2 = new Star((p5.width / 2)+60 , p5.height / 2, 0, -1,env.mass2);
     p = new Particle((p5.width / 2) , (p5.height / 2)+60, 0, 0);
+    if (env.particle){
+        p = new Particle((p5.width / 2) , (p5.height / 2)+60, 0, 0);
+    }   
     p5.noStroke();
 
     }
@@ -160,12 +158,17 @@ function incircle(circle) {
     return distance < 10;
 }
 p5.draw = function() {
-    p5.background(220, 220, 255);
-    p5.frameRate(env.framerate);
+    p5.background(100,75,100);
+    p5.frameRate(30);
     p5.fill(0)
     s1 = new Star(s1.pos.x, s1.pos.y, s1.vel.x, s1.vel.y, env.mass1);
     s2 = new Star(s2.pos.x, s2.pos.y, s2.vel.x, s2.vel.y, env.mass2);
-    p = new Particle(p.pos.x, p.pos.y, p.vel.x, p.vel.y);
+    if (env.particle){
+        p = new Particle(p.pos.x, p.pos.y, p.vel.x, p.vel.y);
+    } else{
+        p = new Particle((p5.width / 2) , (p5.height / 2)+60, 0, 0);
+    }
+
     if (env.start == true) {
         s1.applyForce(s2.attract(s1));
         s2.applyForce(s1.attract(s2));
@@ -185,9 +188,6 @@ p5.draw = function() {
     }else{
         s1.render();
         s2.render();
-        if (env.particle){
-        p.render();
-        }
     }
     
         
@@ -196,3 +196,4 @@ p5.draw = function() {
 
 }
 ```
+This simulation shows how two stars bodies would move in a two dimensional space due to their respective gravities. It should be noted that the star that starts on the left has an upward starting velocity and the star that starts on the right has a downwards starting velocity. This makes them more likely to orbit instead of just colliding.
