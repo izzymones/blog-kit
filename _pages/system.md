@@ -68,16 +68,11 @@ class Particle {
     }
   
     render() {
-        p5.stroke(0);
-        p5.noFill();
-        p5.beginShape();
-        for (const v of this.history) {
-            p5.vertex(v.x, v.y);
-        }
-        p5.endShape();
-    
+        p5.push()
+        p5.stroke(this.c);
         p5.fill(this.c);
         p5.circle(this.pos.x, this.pos.y, this.r);
+        p5.pop()
     }
 } 
 
@@ -98,16 +93,11 @@ class Star extends Particle {
     }
   
     render() {
-        p5.stroke(0);
-        p5.noFill();
-        p5.beginShape();
-        for (const v of this.history) {
-            p5.vertex(v.x, v.y);
-        }
-        p5.endShape();
-        p5.stroke(0);
+        p5.push()
+        p5.stroke(this.c);
         p5.fill(this.c);
         p5.circle(this.pos.x, this.pos.y, this.r);
+        p5.pop()
     }
 }
 
