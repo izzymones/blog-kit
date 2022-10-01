@@ -95,11 +95,11 @@ class Star extends Particle {
     }
   
     render() {
-        p5.push()
+        p5.push()p;
         p5.stroke(this.c);
         p5.fill(this.c);
         p5.circle(this.pos.x, this.pos.y, this.r);
-        p5.pop()
+        p5.pop();
     }
 }
 
