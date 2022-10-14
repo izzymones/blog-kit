@@ -1,64 +1,89 @@
 ---
-title: 'Testing Telescope Image Manipulation'
+title: 'The Cosmic Cliffs'
 smartdown: true
-header: 'none'
+header: 'Transfer infrared light captured by the JWST into light from the visual spectrum to make a cool image.'
 ---
-3. divide by active filters
+Transfer infrared light captured by the JWST into light from the visual spectrum to make a cool image.
+
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
 
 # :::: intro
 # --outlinebox int
 ### Telescope Intro
-Use this disclosable to put introductory information about the app.  
-[Notes](/pages/telescopeProjectNotes) if you want to learn more about how I did this.
+These are the cosmic cliffs of the [Carina Nebula](https://en.wikipedia.org/wiki/Carina_Nebula). It has been constructed with javascript on this website with data directly from the [James Webb Space Telescope's](https://webb.nasa.gov/) NIRCam instrument. I found the data available for free on [MAST observations](https://mast.stsci.edu/portal/Mashup/Clients/Mast/Portal.html). This is a prototype as three of the six filters are not aligned, and I am learning astropy to figure out how to align them. You can change the color assignments for each filter as well as the stretch function. Play around and see what you can make.
+[Notes](/pages/telescopeNotes).
 # --outlinebox
 # ::::
 
 
 # :::: loading
-This page is reading telescope files.  Please be patient.
-# ::::
-
-# :::: F770
-# --aliceblue
-This is an explanation of what this filter does.
-# --aliceblue
+This page is reading telescope files. Please be patient.
 # ::::
 
 
 # :::: panel
 # --outlinebox p
-This disclosable if for app controls
-[F770W](::F770/tooltip) [](:XuseF770W) [](:-color1/0/5.9/0.1)[show settings](:=filter0=true)
-F1000W [](:XuseF1000W) [](:-color2/0/5.9/0.1)[show settings](:=filter1=true)
-F1130W [](:XuseF1130W) [](:-color3/0/5.9/0.1)[show settings](:=filter2=true)
-F2100W [](:XuseF2100W) [](:-color4/0/5.9/0.1)[show settings](:=filter3=true)
+F090W [](:XuseFilter1) [](:-color1/0/5/0.1)[show settings](:=filter0=true)
+F187N [](:XuseFilter2) [](:-color2/0/5/0.1)[show settings](:=filter1=true)
+F200W [](:XuseFilter3) [](:-color3/0/5/0.1)[show settings](:=filter2=true)
+F335M [](:XuseFilter4) [](:-color4/0/5/0.1)[show settings](:=filter3=true)
+F444W [](:XuseFilter5) [](:-color5/0/5/0.1)[show settings](:=filter4=true)
+F470N [](:XuseFilter6) [](:-color6/0/5/0.1)[show settings](:=filter5=true)
 [Redraw](:=redraw=true)
 # --outlinebox
 # ::::
 
 
 ```javascript /autoplay/kiosk
-let dataNames = ['f770w', 'f1000w', 'f1130w', 'f2100w'];
-let min = [10.0, 28.0, 40.0, 242.0];
-let max = [25.0, 36.0, 60.0, 255.0];
-let stretchFunction = ['x', 'x', 'x', 'x'];
+let dataNames = ['f090w', 'f187n', 'f200w', 'f335m', 'f444w', 'f470n'];
+let min = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
+let max = [5.0, 50.0, 5.0, 25.0, 15.0, 15.0];
+let stretchFunction = ['x', 'x', 'x', 'x', 'x', 'x'];
 let actualStretchFunction = [];
-for (let i = 0; i < 4; i++){
+for (let i = 0; i < 6; i++){
   actualStretchFunction.push(new Function('x', 'return ' + stretchFunction[i] + ';'));
 }
 let activeFilter = 0;
 let dataArrays = [];
+smartdown.showDisclosure('intro','','transparent,topleft,closeable,draggable,shadow,outline');
 smartdown.showDisclosure('panel','','transparent,bottomright,draggable,shadow,outline');
-smartdown.showDisclosure('intro','','transparent,bottomleft,closeable,draggable,shadow,outline');
-smartdown.setVariable('useF770W', false);
-smartdown.setVariable('useF1000W', false);
-smartdown.setVariable('useF1130W', false);
-smartdown.setVariable('useF2100W', false);
+smartdown.setVariable('useFilter1', false);
+smartdown.setVariable('useFilter2', false);
+smartdown.setVariable('useFilter3', false);
+smartdown.setVariable('useFilter4', true);
+smartdown.setVariable('useFilter5', true);
+smartdown.setVariable('useFilter6', true);
 smartdown.setVariable('redraw',false);
-smartdown.setVariable('color1', 0);
-smartdown.setVariable('color2', 0);
-smartdown.setVariable('color3', 0);
+smartdown.setVariable('color1', 1);
+smartdown.setVariable('color2', 2);
+smartdown.setVariable('color3', 3);
 smartdown.setVariable('color4', 0);
+smartdown.setVariable('color5', 4);
+smartdown.setVariable('color6', 1);
 smartdown.setVariable('setFilter', dataNames[activeFilter]);
 smartdown.setVariable('curveFunction', stretchFunction[activeFilter]);
 smartdown.setVariable('min', min[activeFilter]);
@@ -69,6 +94,8 @@ smartdown.setVariable('filter0', 'false');
 smartdown.setVariable('filter1', 'false');
 smartdown.setVariable('filter2', 'false');
 smartdown.setVariable('filter3', 'false');
+smartdown.setVariable('filter4', 'false');
+smartdown.setVariable('filter5', 'false');
 
 
 async function getImageData(filename) {
@@ -79,16 +106,19 @@ async function getImageData(filename) {
 
 
 smartdown.showDisclosure('loading','','center,lightbox');
-dataArrays.push(await getImageData('../../assets/data/f770.json'));
-dataArrays.push(await getImageData('../../assets/data/f1000.json'));
-dataArrays.push(await getImageData('../../assets/data/f1130.json'));
-dataArrays.push(await getImageData('../../assets/data/f2100.json'));
+dataArrays.push(await getImageData('../../assets/data/cc_f090.json'));
+dataArrays.push(await getImageData('../../assets/data/cc_f187.json'));
+dataArrays.push(await getImageData('../../assets/data/cc_f200.json'));
+dataArrays.push(await getImageData('../../assets/data/cc_f335.json'));
+dataArrays.push(await getImageData('../../assets/data/cc_f444.json'));
+dataArrays.push(await getImageData('../../assets/data/cc_f470.json'));
 smartdown.hideDisclosure('loading','','');
 
 
 let nrows = dataArrays[0].length;
 let ncols = 0;
 if (nrows > 0) { ncols = dataArrays[0][0].length; }
+
      
 
 this.div.style.width = '100%';
@@ -99,6 +129,8 @@ let canvas = document.getElementById("appCanvas");
 let context = canvas.getContext("2d");
 canvas.width  = window.innerWidth;
 canvas.height = window.innerHeight;
+let xshift = Math.round((ncols - canvas.width)/2)
+let yshift = Math.round((nrows - canvas.height)/2)
 
 
 function sizeCanvas() {
@@ -152,27 +184,27 @@ function saveFilterVariables() {
 function spectrumProcess(number){
   let answer = [0,0,0]
   if (number <= 1 && number >= 0){
-    answer[1] = number
-    answer[0] = 1
+    answer[0] = 1 - number
+    answer[2] = 1
   }
   if (number <= 2 && number > 1){
-    answer[0] = 1 - (number-1)
-    answer[1] = 1
+    answer[1] = number - 1
+    answer[2] = 1
   }
   if (number <= 3 && number > 2){
-    answer[2] = (number-2)
+    answer[2] = 3 - number
     answer[1] = 1
   }
   if (number <= 4 && number > 3){
-    answer[1] = 1 - (number-3)
-    answer[2] = 1
+    answer[0] = number - 3
+    answer[1] = 1
   }
   if (number <= 5 && number > 4){
-    answer[0] = (number-4)
-    answer[2] = 1
+    answer[1] = 5 - number
+    answer[0] = 1
   }
   if (number <= 6 && number > 5){
-    answer[2] = 1 - (number-5)
+    answer[2] = number-5
     answer[0] = 1
   }
   return answer
@@ -196,16 +228,14 @@ function getValue(value, i) {
 
 function activeFunctions() {
   let f = 0;
-  if (env.useF770W) {f++; }
-  if (env.useF1000W) {f++;}
-  if (env.useF1130W) {f++;}
-  if (env.useF2100W) {f++;}
+  if (env.useFilter1) {f++; }
+  if (env.useFilter2) {f++;}
+  if (env.useFilter3) {f++;}
+  if (env.useFilter4) {f++;}
+  if (env.useFilter5) {f++;}
+  if (env.useFilter6) {f++;}
   return f;
 }
-
-
-let xshift = 600;
-let yshift = 200;
 
 
 function draw() {
@@ -213,10 +243,12 @@ function draw() {
   let f2color = spectrumProcess(env.color2)
   let f3color = spectrumProcess(env.color3)
   let f4color = spectrumProcess(env.color4)
+  let f5color = spectrumProcess(env.color5)
+  let f6color = spectrumProcess(env.color6)
   let imagedata = context.createImageData(canvas.width, canvas.height);
   for (let y=0; y<canvas.height; y++) {
       for (let x=0; x<canvas.width; x++) {
-        let ny = y + yshift;
+        let ny = canvas.height - y + yshift;
         let nx = x + xshift;
         let pixelindex = (y * canvas.width + x) * 4;
         imagedata.data[pixelindex+0] = 0;
@@ -224,25 +256,35 @@ function draw() {
         imagedata.data[pixelindex+2] = 0;
         imagedata.data[pixelindex+3] = 255;
         if (ny < nrows && nx < ncols) {
-          if (env.useF770W){
+          if (env.useFilter1){
             imagedata.data[pixelindex+0] += (getValue(dataArrays[0][ny][nx],0)*f1color[0]);
             imagedata.data[pixelindex+1] += (getValue(dataArrays[0][ny][nx],0)*f1color[1]);
             imagedata.data[pixelindex+2] += (getValue(dataArrays[0][ny][nx],0)*f1color[2]);
           }
-          if (env.useF1000W){
+          if (env.useFilter2){
             imagedata.data[pixelindex+0] += (getValue(dataArrays[1][ny][nx],1)*f2color[0]);
             imagedata.data[pixelindex+1] += (getValue(dataArrays[1][ny][nx],1)*f2color[1]);
             imagedata.data[pixelindex+2] += (getValue(dataArrays[1][ny][nx],1)*f2color[2]);
           }
-          if (env.useF1130W){
+          if (env.useFilter3){
             imagedata.data[pixelindex+0] += (getValue(dataArrays[2][ny][nx],2)*f3color[0]);
             imagedata.data[pixelindex+1] += (getValue(dataArrays[2][ny][nx],2)*f3color[1]);
             imagedata.data[pixelindex+2] += (getValue(dataArrays[2][ny][nx],2)*f3color[2]);
           }
-          if (env.useF2100W){
+          if (env.useFilter4){
             imagedata.data[pixelindex+0] += (getValue(dataArrays[3][ny][nx],3)*f4color[0]);
             imagedata.data[pixelindex+1] += (getValue(dataArrays[3][ny][nx],3)*f4color[1]);
             imagedata.data[pixelindex+2] += (getValue(dataArrays[3][ny][nx],3)*f4color[2]);
+          }
+          if (env.useFilter5){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[4][ny][nx],4)*f5color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[4][ny][nx],4)*f5color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[4][ny][nx],4)*f5color[2]);
+        }
+          if (env.useFilter6){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[5][ny][nx],5)*f6color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[5][ny][nx],5)*f6color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[5][ny][nx],5)*f6color[2]);
         }
       }
     }
@@ -256,7 +298,7 @@ window.addEventListener('resize', function(event){
   draw();
 });
 
-this.dependOn = ['filter0','filter1', 'filter2', 'filter3', 'saveSettings','drawHistogram','redraw'];
+this.dependOn = ['filter0','filter1', 'filter2', 'filter3', 'filter4', 'filter5', 'saveSettings','drawHistogram','redraw'];
 this.depend = function() {
 
   // here's the repeated code that should be fixed
@@ -287,6 +329,22 @@ this.depend = function() {
   if (env.filter3 == true) {
     smartdown.setVariable('filter3', false);
     activeFilter = 3;
+    updateFilterVariables();
+    drawHistogram();
+    smartdown.showDisclosure('filterSettings','','center,closeable,lightbox');
+  }
+
+  if (env.filter4 == true) {
+    smartdown.setVariable('filter4', false);
+    activeFilter = 4;
+    updateFilterVariables();
+    drawHistogram();
+    smartdown.showDisclosure('filterSettings','','center,closeable,lightbox');
+  }
+
+  if (env.filter5 == true) {
+    smartdown.setVariable('filter5', false);
+    activeFilter = 5;
     updateFilterVariables();
     drawHistogram();
     smartdown.showDisclosure('filterSettings','','center,closeable,lightbox');

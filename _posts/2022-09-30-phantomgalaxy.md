@@ -1,15 +1,45 @@
 ---
-title: 'Testing Telescope Image Manipulation'
+title: 'Phantom Galaxy'
 smartdown: true
 header: 'none'
 ---
-3. divide by active filters
+Transfer infrared light captured by the JWST into light from the visual spectrum to make a cool image.
 
+- filter descriptions
+- tooltips appear in wrong place
+- copyright in middle of page
+- size issues
+- new images
+- color circles
+- library
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
 # :::: intro
 # --outlinebox int
 ### Telescope Intro
-Use this disclosable to put introductory information about the app.  
-[Notes](/pages/telescopeProjectNotes) if you want to learn more about how I did this.
+This is [Messier 74](https://en.wikipedia.org/wiki/Messier_74) also known as the Phantom Galaxy. It has been constructed with javascript on this website with data directly from the [James Webb Space Telescope's](https://webb.nasa.gov/) MIRI instrument. You can change the color assignments for each filter as well as the stretch function. Play around and see what you can make.
+Check out [Notes](/pages/telescopeNotes) if you want to learn more about how I did this.
 # --outlinebox
 # ::::
 
@@ -18,20 +48,14 @@ Use this disclosable to put introductory information about the app.
 This page is reading telescope files.  Please be patient.
 # ::::
 
-# :::: F770
-# --aliceblue
-This is an explanation of what this filter does.
-# --aliceblue
-# ::::
-
 
 # :::: panel
 # --outlinebox p
 This disclosable if for app controls
-[F770W](::F770/tooltip) [](:XuseF770W) [](:-color1/0/5.9/0.1)[show settings](:=filter0=true)
-F1000W [](:XuseF1000W) [](:-color2/0/5.9/0.1)[show settings](:=filter1=true)
-F1130W [](:XuseF1130W) [](:-color3/0/5.9/0.1)[show settings](:=filter2=true)
-F2100W [](:XuseF2100W) [](:-color4/0/5.9/0.1)[show settings](:=filter3=true)
+F770W [](:XuseF770W) [](:-color1/0/5/0.1)[show settings](:=filter0=true)
+F1000W [](:XuseF1000W) [](:-color2/0/5/0.1)[show settings](:=filter1=true)
+F1130W [](:XuseF1130W) [](:-color3/0/5/0.1)[show settings](:=filter2=true)
+F2100W [](:XuseF2100W) [](:-color4/0/5/0.1)[show settings](:=filter3=true)
 [Redraw](:=redraw=true)
 # --outlinebox
 # ::::
@@ -39,8 +63,8 @@ F2100W [](:XuseF2100W) [](:-color4/0/5.9/0.1)[show settings](:=filter3=true)
 
 ```javascript /autoplay/kiosk
 let dataNames = ['f770w', 'f1000w', 'f1130w', 'f2100w'];
-let min = [10.0, 28.0, 40.0, 242.0];
-let max = [25.0, 36.0, 60.0, 255.0];
+let min = [10.0, 28.0, 42.0, 245.0];
+let max = [25.0, 36.0, 65.0, 260.0];
 let stretchFunction = ['x', 'x', 'x', 'x'];
 let actualStretchFunction = [];
 for (let i = 0; i < 4; i++){
@@ -49,15 +73,15 @@ for (let i = 0; i < 4; i++){
 let activeFilter = 0;
 let dataArrays = [];
 smartdown.showDisclosure('panel','','transparent,bottomright,draggable,shadow,outline');
-smartdown.showDisclosure('intro','','transparent,bottomleft,closeable,draggable,shadow,outline');
-smartdown.setVariable('useF770W', false);
-smartdown.setVariable('useF1000W', false);
+smartdown.showDisclosure('intro','','transparent,topleft,closeable,draggable,shadow,outline');
+smartdown.setVariable('useF770W', true);
+smartdown.setVariable('useF1000W', true);
 smartdown.setVariable('useF1130W', false);
 smartdown.setVariable('useF2100W', false);
 smartdown.setVariable('redraw',false);
-smartdown.setVariable('color1', 0);
-smartdown.setVariable('color2', 0);
-smartdown.setVariable('color3', 0);
+smartdown.setVariable('color1', 1);
+smartdown.setVariable('color2', 3);
+smartdown.setVariable('color3', 5);
 smartdown.setVariable('color4', 0);
 smartdown.setVariable('setFilter', dataNames[activeFilter]);
 smartdown.setVariable('curveFunction', stretchFunction[activeFilter]);
@@ -152,27 +176,27 @@ function saveFilterVariables() {
 function spectrumProcess(number){
   let answer = [0,0,0]
   if (number <= 1 && number >= 0){
-    answer[1] = number
-    answer[0] = 1
+    answer[0] = 1 - number
+    answer[2] = 1
   }
   if (number <= 2 && number > 1){
-    answer[0] = 1 - (number-1)
-    answer[1] = 1
+    answer[1] = number - 1
+    answer[2] = 1
   }
   if (number <= 3 && number > 2){
-    answer[2] = (number-2)
+    answer[2] = 3 - number
     answer[1] = 1
   }
   if (number <= 4 && number > 3){
-    answer[1] = 1 - (number-3)
-    answer[2] = 1
+    answer[0] = number - 3
+    answer[1] = 1
   }
   if (number <= 5 && number > 4){
-    answer[0] = (number-4)
-    answer[2] = 1
+    answer[1] = 5 - number
+    answer[0] = 1
   }
   if (number <= 6 && number > 5){
-    answer[2] = 1 - (number-5)
+    answer[2] = number-5
     answer[0] = 1
   }
   return answer
@@ -216,7 +240,7 @@ function draw() {
   let imagedata = context.createImageData(canvas.width, canvas.height);
   for (let y=0; y<canvas.height; y++) {
       for (let x=0; x<canvas.width; x++) {
-        let ny = y + yshift;
+        let ny = canvas.height - y + yshift;
         let nx = x + xshift;
         let pixelindex = (y * canvas.width + x) * 4;
         imagedata.data[pixelindex+0] = 0;
