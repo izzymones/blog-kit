@@ -1,7 +1,7 @@
 ---
 title: 'The Cosmic Cliffs'
 smartdown: true
-header: 'Transfer infrared light captured by the JWST into light from the visual spectrum to make a cool image.'
+header: 'none'
 ---
 Transfer infrared light captured by the JWST into light from the visual spectrum to make a cool image.
 
@@ -59,18 +59,21 @@ F470N [](:XuseFilter6) [](:-color6/0/5/0.1)[show settings](:=filter5=true)
 
 
 ```javascript /autoplay/kiosk
+//smartdown.import=/cb/assets/libs/fits.js
 let dataNames = ['f090w', 'f187n', 'f200w', 'f335m', 'f444w', 'f470n'];
 let min = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
 let max = [5.0, 50.0, 5.0, 25.0, 15.0, 15.0];
 let stretchFunction = ['x', 'x', 'x', 'x', 'x', 'x'];
 let actualStretchFunction = [];
+
 for (let i = 0; i < 6; i++){
   actualStretchFunction.push(new Function('x', 'return ' + stretchFunction[i] + ';'));
 }
+
 let activeFilter = 0;
 let dataArrays = [];
-smartdown.showDisclosure('intro','','transparent,topleft,closeable,draggable,shadow,outline');
-smartdown.showDisclosure('panel','','transparent,bottomright,draggable,shadow,outline');
+smartdown.showDisclosure('intro', '', 'transparent,topleft,closeable,draggable,shadow,outline');
+smartdown.showDisclosure('panel', '', 'transparent,bottomright,draggable,shadow,outline');
 smartdown.setVariable('useFilter1', false);
 smartdown.setVariable('useFilter2', false);
 smartdown.setVariable('useFilter3', false);
@@ -98,39 +101,28 @@ smartdown.setVariable('filter4', 'false');
 smartdown.setVariable('filter5', 'false');
 
 
-async function getImageData(filename) {
-  const res = await fetch(filename);
-  const array = await res.json();
-  return array;
+async function getImageData(filenameBase) {
+  return getImageDataFromFITS(filenameBase);
 }
 
+smartdown.showDisclosure('loading', '', 'center,lightbox');
+dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f090w_i2d_match'));
+dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f187n_i2d_match'));
+dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f200w_i2d_match'));
+dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f335m_i2d_match'));
+dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f444w_i2d_match'));
+dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_f444w-f470n_i2d_match'));
+smartdown.hideDisclosure('loading', '', '');
 
-smartdown.showDisclosure('loading','','center,lightbox');
-dataArrays.push(await getImageData('../../assets/data/cc_f090.json'));
-dataArrays.push(await getImageData('../../assets/data/cc_f187.json'));
-dataArrays.push(await getImageData('../../assets/data/cc_f200.json'));
-dataArrays.push(await getImageData('../../assets/data/cc_f335.json'));
-dataArrays.push(await getImageData('../../assets/data/cc_f444.json'));
-dataArrays.push(await getImageData('../../assets/data/cc_f470.json'));
-smartdown.hideDisclosure('loading','','');
-
-
-let nrows = dataArrays[0].length;
-let ncols = 0;
-if (nrows > 0) { ncols = dataArrays[0][0].length; }
-
-     
 
 this.div.style.width = '100%';
 this.div.style.height = '100%';
 this.div.style.margin = 'auto';
-this.div.innerHTML = `<canvas id="appCanvas"></canvas>`
+this.div.innerHTML = `<canvas id="appCanvas"></canvas>`;
 let canvas = document.getElementById("appCanvas"); 
 let context = canvas.getContext("2d");
 canvas.width  = window.innerWidth;
 canvas.height = window.innerHeight;
-let xshift = Math.round((ncols - canvas.width)/2)
-let yshift = Math.round((nrows - canvas.height)/2)
 
 
 function sizeCanvas() {
@@ -141,14 +133,14 @@ sizeCanvas();
 
 
 function drawHistogram() {
-  let div = document.getElementById('div_playable_2')
+  let div = document.getElementById('div_playable_2');
   let data2d = dataArrays[activeFilter];
   let histData = [];
   let f = new Function('x', 'return ' + env.curveFunction + ';');
   let min = env.min;
   let max = env.max;
-  for (let r=0; r < data2d.length; r++) {
-    for (let c=0; c < data2d[0].length; c++) {
+  for (let r = 0; r < data2d.length; r++) {
+    for (let c = 0; c < data2d[0].length; c++) {
       let value = f(data2d[r][c]);
       if (value >= min && value <= max) { 
         histData.push(value);
@@ -182,30 +174,30 @@ function saveFilterVariables() {
 
 
 function spectrumProcess(number){
-  let answer = [0,0,0]
+  let answer = [0, 0, 0];
   if (number <= 1 && number >= 0){
-    answer[0] = 1 - number
-    answer[2] = 1
+    answer[0] = 1 - number;
+    answer[2] = 1;
   }
   if (number <= 2 && number > 1){
-    answer[1] = number - 1
-    answer[2] = 1
+    answer[1] = number - 1;
+    answer[2] = 1;
   }
   if (number <= 3 && number > 2){
-    answer[2] = 3 - number
-    answer[1] = 1
+    answer[2] = 3 - number;
+    answer[1] = 1;
   }
   if (number <= 4 && number > 3){
-    answer[0] = number - 3
-    answer[1] = 1
+    answer[0] = number - 3;
+    answer[1] = 1;
   }
   if (number <= 5 && number > 4){
-    answer[1] = 5 - number
-    answer[0] = 1
+    answer[1] = 5 - number;
+    answer[0] = 1;
   }
   if (number <= 6 && number > 5){
-    answer[2] = number-5
-    answer[0] = 1
+    answer[2] = number - 5;
+    answer[0] = 1;
   }
   return answer
 }
@@ -228,7 +220,7 @@ function getValue(value, i) {
 
 function activeFunctions() {
   let f = 0;
-  if (env.useFilter1) {f++; }
+  if (env.useFilter1) {f++;}
   if (env.useFilter2) {f++;}
   if (env.useFilter3) {f++;}
   if (env.useFilter4) {f++;}
@@ -237,25 +229,35 @@ function activeFunctions() {
   return f;
 }
 
-
+let r = dataArrays[0].length;
+let c = 0;
+if (r > 0) { c = dataArrays[0][0].length; }
+console.log(r, c);
 function draw() {
-  let f1color = spectrumProcess(env.color1)
-  let f2color = spectrumProcess(env.color2)
-  let f3color = spectrumProcess(env.color3)
-  let f4color = spectrumProcess(env.color4)
-  let f5color = spectrumProcess(env.color5)
-  let f6color = spectrumProcess(env.color6)
+  let f1color = spectrumProcess(env.color1);
+  let f2color = spectrumProcess(env.color2);
+  let f3color = spectrumProcess(env.color3);
+  let f4color = spectrumProcess(env.color4);
+  let f5color = spectrumProcess(env.color5);
+  let f6color = spectrumProcess(env.color6);
   let imagedata = context.createImageData(canvas.width, canvas.height);
+  let w = canvas.width;
+  let h = canvas.height;
   for (let y=0; y<canvas.height; y++) {
       for (let x=0; x<canvas.width; x++) {
-        let ny = canvas.height - y + yshift;
-        let nx = x + xshift;
+        // changing this code to fit the image to the viewer's screen
+        // we just scale the pixel position the same position in the 
+        // data array and round to the nearest integer to get an array index
+        // It's sort of like sampling due to some round off error
+        let ydown = h - y;
+        let ny = h < r ? Math.floor(ydown / h * r) : ydown;
+        let nx = w < c ? Math.floor((x / canvas.width) * c) : x; 
         let pixelindex = (y * canvas.width + x) * 4;
         imagedata.data[pixelindex+0] = 0;
         imagedata.data[pixelindex+1] = 0;
         imagedata.data[pixelindex+2] = 0;
         imagedata.data[pixelindex+3] = 255;
-        if (ny < nrows && nx < ncols) {
+        if (ny < r && nx < c) {
           if (env.useFilter1){
             imagedata.data[pixelindex+0] += (getValue(dataArrays[0][ny][nx],0)*f1color[0]);
             imagedata.data[pixelindex+1] += (getValue(dataArrays[0][ny][nx],0)*f1color[1]);
@@ -289,7 +291,7 @@ function draw() {
       }
     }
   }
-  context.putImageData(imagedata,0,0);
+  context.putImageData(imagedata, 0, 0);
 }
 
 
@@ -298,16 +300,15 @@ window.addEventListener('resize', function(event){
   draw();
 });
 
-this.dependOn = ['filter0','filter1', 'filter2', 'filter3', 'filter4', 'filter5', 'saveSettings','drawHistogram','redraw'];
-this.depend = function() {
 
-  // here's the repeated code that should be fixed
+this.dependOn = ['filter0', 'filter1', 'filter2', 'filter3', 'filter4', 'filter5', 'saveSettings','drawHistogram','redraw'];
+this.depend = function() {
   if (env.filter0 == true) {
     smartdown.setVariable('filter0', false);
     activeFilter = 0;
     updateFilterVariables();
     drawHistogram();
-    smartdown.showDisclosure('filterSettings','','center,closeable,lightbox');
+    smartdown.showDisclosure('filterSettings', '', 'center,closeable,lightbox');
   }
 
   if (env.filter1 == true) {
@@ -315,7 +316,7 @@ this.depend = function() {
     activeFilter = 1;
     updateFilterVariables();
     drawHistogram();
-    smartdown.showDisclosure('filterSettings','','center,closeable,lightbox');
+    smartdown.showDisclosure('filterSettings', '', 'center,closeable,lightbox');
   }
 
   if (env.filter2 == true) {
@@ -323,7 +324,7 @@ this.depend = function() {
     activeFilter = 2;
     updateFilterVariables();
     drawHistogram();
-    smartdown.showDisclosure('filterSettings','','center,closeable,lightbox');
+    smartdown.showDisclosure('filterSettings', '', 'center,closeable,lightbox');
   }
 
   if (env.filter3 == true) {
@@ -331,7 +332,7 @@ this.depend = function() {
     activeFilter = 3;
     updateFilterVariables();
     drawHistogram();
-    smartdown.showDisclosure('filterSettings','','center,closeable,lightbox');
+    smartdown.showDisclosure('filterSettings', '', 'center,closeable,lightbox');
   }
 
   if (env.filter4 == true) {
@@ -339,7 +340,7 @@ this.depend = function() {
     activeFilter = 4;
     updateFilterVariables();
     drawHistogram();
-    smartdown.showDisclosure('filterSettings','','center,closeable,lightbox');
+    smartdown.showDisclosure('filterSettings', '', 'center,closeable,lightbox');
   }
 
   if (env.filter5 == true) {
@@ -347,7 +348,7 @@ this.depend = function() {
     activeFilter = 5;
     updateFilterVariables();
     drawHistogram();
-    smartdown.showDisclosure('filterSettings','','center,closeable,lightbox');
+    smartdown.showDisclosure('filterSettings', '', 'center,closeable,lightbox');
   }
 
   // these events are triggered by the histogram popup
@@ -367,10 +368,7 @@ this.depend = function() {
 }
 
 
-draw()
-
-
-
+draw();
 ```
 # :::: filterSettings
 # --aliceblue
@@ -389,7 +387,6 @@ You can find a list of javascript **Math** functions [here](https://www.w3school
 # --aliceblue
 
 ```javascript /plotly/autoplay
-
 this.div.style.width = '100%';
 this.div.style.height = '100%';
 this.div.style.margin = 'auto';
@@ -399,7 +396,7 @@ smartdown.setVariable('redrawHistogram', false);
 smartdown.setVariable('close', false);
 
 
-this.dependOn = ['redrawHistogram','close'];
+this.dependOn = ['redrawHistogram', 'close'];
 this.depend = function() {
   if (env.redrawHistogram == true) {
     smartdown.setVariable('redrawHistogram', false);
@@ -409,9 +406,8 @@ this.depend = function() {
   if (env.close == true) {
     smartdown.setVariable('close', false);
     smartdown.setVariable('saveSettings', true);
-    smartdown.hideDisclosure('filterSettings','','');
+    smartdown.hideDisclosure('filterSettings', '',  '');
   }
 }
-
 ```
 # ::::

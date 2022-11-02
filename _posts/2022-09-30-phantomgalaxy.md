@@ -3,17 +3,7 @@ title: 'Phantom Galaxy'
 smartdown: true
 header: 'none'
 ---
-Transfer infrared light captured by the JWST into light from the visual spectrum to make a cool image.
 
-- filter descriptions
-- tooltips appear in wrong place
-- copyright in middle of page
-- size issues
-- new images
-- color circles
-- library
-.
-.
 .
 .
 .
@@ -57,14 +47,21 @@ F1000W [](:XuseF1000W) [](:-color2/0/5/0.1)[show settings](:=filter1=true)
 F1130W [](:XuseF1130W) [](:-color3/0/5/0.1)[show settings](:=filter2=true)
 F2100W [](:XuseF2100W) [](:-color4/0/5/0.1)[show settings](:=filter3=true)
 [Redraw](:=redraw=true)
+
 # --outlinebox
 # ::::
 
 
 ```javascript /autoplay/kiosk
+//smartdown.import=/cb/assets/libs/fits.js
+
+
 let dataNames = ['f770w', 'f1000w', 'f1130w', 'f2100w'];
+
 let min = [10.0, 28.0, 42.0, 245.0];
 let max = [25.0, 36.0, 65.0, 260.0];
+
+
 let stretchFunction = ['x', 'x', 'x', 'x'];
 let actualStretchFunction = [];
 for (let i = 0; i < 4; i++){
@@ -95,25 +92,18 @@ smartdown.setVariable('filter2', 'false');
 smartdown.setVariable('filter3', 'false');
 
 
-async function getImageData(filename) {
-  const res = await fetch(filename);
-  const array = await res.json();
-  return array;
+async function getImageData(filenameBase) {
+  return getImageDataFromFITS(filenameBase);
 }
 
 
 smartdown.showDisclosure('loading','','center,lightbox');
-dataArrays.push(await getImageData('../../assets/data/f770.json'));
-dataArrays.push(await getImageData('../../assets/data/f1000.json'));
-dataArrays.push(await getImageData('../../assets/data/f1130.json'));
-dataArrays.push(await getImageData('../../assets/data/f2100.json'));
+dataArrays.push(await getImageData('../../assets/data/jw02107-o039_t018_miri_f770w_i2d_sci'));
+dataArrays.push(await getImageData('../../assets/data/jw02107-o039_t018_miri_f1000w_i2d_sci'));
+dataArrays.push(await getImageData('../../assets/data/jw02107-o039_t018_miri_f1130w_i2d_sci'));
+dataArrays.push(await getImageData('../../assets/data/jw02107-o039_t018_miri_f2100w_i2d_sci'));
 smartdown.hideDisclosure('loading','','');
-
-
-let nrows = dataArrays[0].length;
-let ncols = 0;
-if (nrows > 0) { ncols = dataArrays[0][0].length; }
-     
+    
 
 this.div.style.width = '100%';
 this.div.style.height = '100%';
@@ -227,27 +217,38 @@ function activeFunctions() {
   return f;
 }
 
-
-let xshift = 600;
-let yshift = 200;
-
+// assume all the arrays have same dimensions
+// we should put a check in for this
+let r = dataArrays[0].length;
+let c = 0;
+if (r > 0) { c = dataArrays[0][0].length; }
+console.log(r, c);
 
 function draw() {
-  let f1color = spectrumProcess(env.color1)
-  let f2color = spectrumProcess(env.color2)
-  let f3color = spectrumProcess(env.color3)
-  let f4color = spectrumProcess(env.color4)
+  let f1color = spectrumProcess(env.color1);
+  let f2color = spectrumProcess(env.color2);
+  let f3color = spectrumProcess(env.color3);
+  let f4color = spectrumProcess(env.color4);
   let imagedata = context.createImageData(canvas.width, canvas.height);
+  let w = canvas.width;
+  let h = canvas.height;
   for (let y=0; y<canvas.height; y++) {
       for (let x=0; x<canvas.width; x++) {
-        let ny = canvas.height - y + yshift;
-        let nx = x + xshift;
+
+        // changing this code to fit the image to the viewer's screen
+        // we just scale the pixel position the same position in the 
+        // data array and round to the nearest integer to get an array index
+        // It's sort of like sampling due to some round off error
+        let ydown = h - y;
+        let ny = h < r ? Math.floor(ydown / h * r) : ydown;
+        let nx = w < c ? Math.floor((x / canvas.width) * c) : x; 
+
         let pixelindex = (y * canvas.width + x) * 4;
         imagedata.data[pixelindex+0] = 0;
         imagedata.data[pixelindex+1] = 0;
         imagedata.data[pixelindex+2] = 0;
         imagedata.data[pixelindex+3] = 255;
-        if (ny < nrows && nx < ncols) {
+        if (ny < r && nx < c) {
           if (env.useF770W){
             imagedata.data[pixelindex+0] += (getValue(dataArrays[0][ny][nx],0)*f1color[0]);
             imagedata.data[pixelindex+1] += (getValue(dataArrays[0][ny][nx],0)*f1color[1]);
