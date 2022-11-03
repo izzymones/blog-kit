@@ -62,7 +62,7 @@ F470N [](:XuseFilter6) [](:-color6/0/5/0.1)[show settings](:=filter5=true)
 //smartdown.import=/cb/assets/libs/fits.js
 let dataNames = ['f090w', 'f187n', 'f200w', 'f335m', 'f444w', 'f470n'];
 let min = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
-let max = [5.0, 50.0, 5.0, 25.0, 15.0, 15.0];
+let max = [8.0, 85.0, 60.0, 40.0, 15.0, 75.0];
 let stretchFunction = ['x', 'x', 'x', 'x', 'x', 'x'];
 let actualStretchFunction = [];
 
@@ -74,9 +74,9 @@ let activeFilter = 0;
 let dataArrays = [];
 smartdown.showDisclosure('intro', '', 'transparent,topleft,closeable,draggable,shadow,outline');
 smartdown.showDisclosure('panel', '', 'transparent,bottomright,draggable,shadow,outline');
-smartdown.setVariable('useFilter1', false);
-smartdown.setVariable('useFilter2', false);
-smartdown.setVariable('useFilter3', false);
+smartdown.setVariable('useFilter1', true);
+smartdown.setVariable('useFilter2', true);
+smartdown.setVariable('useFilter3', true);
 smartdown.setVariable('useFilter4', true);
 smartdown.setVariable('useFilter5', true);
 smartdown.setVariable('useFilter6', true);
@@ -84,9 +84,9 @@ smartdown.setVariable('redraw',false);
 smartdown.setVariable('color1', 1);
 smartdown.setVariable('color2', 2);
 smartdown.setVariable('color3', 3);
-smartdown.setVariable('color4', 0);
-smartdown.setVariable('color5', 4);
-smartdown.setVariable('color6', 1);
+smartdown.setVariable('color4', 4.5);
+smartdown.setVariable('color5', 5);
+smartdown.setVariable('color6', 4);
 smartdown.setVariable('setFilter', dataNames[activeFilter]);
 smartdown.setVariable('curveFunction', stretchFunction[activeFilter]);
 smartdown.setVariable('min', min[activeFilter]);
@@ -211,7 +211,7 @@ function getValue(value, i) {
     if (newvalue > newmax) c = 255;
     else {
         if (newvalue > newmin) {
-            c = (Math.round((newvalue - newmin) / (newmax - newmin) * 255))/activeFunctions();
+            c = (Math.round((newvalue - newmin) / (newmax - newmin) * 255));
         }
     }
     return c;

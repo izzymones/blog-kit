@@ -201,7 +201,7 @@ function getValue(value, i) {
     if (newvalue > newmax) c = 255;
     else {
         if (newvalue > newmin) {
-            c = (Math.round((newvalue - newmin) / (newmax - newmin) * 255))/activeFunctions();
+            c = (Math.round((newvalue - newmin) / (newmax - newmin) * 255));
         }
     }
     return c;
