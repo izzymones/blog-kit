@@ -59,7 +59,7 @@ F470N [](:XuseFilter6) [](:-color6/0/5/0.1)[show settings](:=filter5=true)
 
 
 ```javascript /autoplay/kiosk
-//smartdown.import=/cb/assets/libs/fits.js
+//smartdown.import=/assets/libs/fits.js
 let dataNames = ['f090w', 'f187n', 'f200w', 'f335m', 'f444w', 'f470n'];
 let min = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
 let max = [8.0, 85.0, 60.0, 40.0, 15.0, 75.0];

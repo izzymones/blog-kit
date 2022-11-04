@@ -53,7 +53,7 @@ F2100W [](:XuseF2100W) [](:-color4/0/5/0.1)[show settings](:=filter3=true)
 
 
 ```javascript /autoplay/kiosk
-//smartdown.import=/cb/assets/libs/fits.js
+//smartdown.import=/assets/libs/fits.js
 
 
 let dataNames = ['f770w', 'f1000w', 'f1130w', 'f2100w'];
