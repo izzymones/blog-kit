@@ -34,14 +34,16 @@ Transfer infrared light captured by the JWST into light from the visual spectrum
 # :::: intro
 # --outlinebox int
 ### Telescope Intro
-These are the cosmic cliffs of the [Carina Nebula](https://en.wikipedia.org/wiki/Carina_Nebula). It has been constructed with javascript on this website with data directly from the [James Webb Space Telescope's](https://webb.nasa.gov/) NIRCam instrument. I found the data available for free on [MAST observations](https://mast.stsci.edu/portal/Mashup/Clients/Mast/Portal.html). This is a prototype as three of the six filters are not aligned, and I am learning astropy to figure out how to align them. You can change the color assignments for each filter as well as the stretch function. Play around and see what you can make.
+These are the cosmic cliffs of the [Carina Nebula](https://en.wikipedia.org/wiki/Carina_Nebula). It has been constructed with javascript on this website with data directly from the [James Webb Space Telescope's](https://webb.nasa.gov/) NIRCam instrument. I found the data available for free on [MAST observations](https://mast.stsci.edu/portal/Mashup/Clients/Mast/Portal.html). You can change the color assignments for each filter as well as the stretch function. Play around and see what you can make.
 [Notes](/pages/telescopeNotes).
+
+![thumbnail](https://jwst-docs.stsci.edu/files/97978094/97978104/1/1596073152120/NIRCam_filters_modules.png)
 # --outlinebox
 # ::::
 
 
 # :::: loading
-This page is reading telescope files. Please be patient.
+This page is reading telescope files. It's worth the wait!
 # ::::
 
 
@@ -53,13 +55,13 @@ F200W [](:XuseFilter3) [](:-color3/0/5/0.1)[show settings](:=filter2=true)
 F335M [](:XuseFilter4) [](:-color4/0/5/0.1)[show settings](:=filter3=true)
 F444W [](:XuseFilter5) [](:-color5/0/5/0.1)[show settings](:=filter4=true)
 F470N [](:XuseFilter6) [](:-color6/0/5/0.1)[show settings](:=filter5=true)
-[Redraw](:=redraw=true)
+[Redraw](:=redraw=true) 
 # --outlinebox
 # ::::
 
 
 ```javascript /autoplay/kiosk
-//smartdown.import=/assets/libs/fits.js
+//smartdown.import=../../assets/libs/fits.js
 let dataNames = ['f090w', 'f187n', 'f200w', 'f335m', 'f444w', 'f470n'];
 let min = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
 let max = [8.0, 85.0, 60.0, 40.0, 15.0, 75.0];
@@ -81,6 +83,7 @@ smartdown.setVariable('useFilter4', true);
 smartdown.setVariable('useFilter5', true);
 smartdown.setVariable('useFilter6', true);
 smartdown.setVariable('redraw',false);
+smartdown.setVariable('download', false);
 smartdown.setVariable('color1', 1);
 smartdown.setVariable('color2', 2);
 smartdown.setVariable('color3', 3);
@@ -301,8 +304,43 @@ window.addEventListener('resize', function(event){
 });
 
 
-this.dependOn = ['filter0', 'filter1', 'filter2', 'filter3', 'filter4', 'filter5', 'saveSettings','drawHistogram','redraw'];
+
+// this is the new exportImage function that works
+function exportImage() {
+
+  // this function was taking too long.  Instead of waiting for this function to finish, it was 
+  // going ahead and trying to write the imgData to the new tab.  But the data wasn't there yet.
+  // This resulted in a blank page if the page was full resolution.
+  // It doesn't happen at all on my computer because my CPU might be a little faster.
+  const imgData = canvas.toDataURL("image/jpg");
+
+  let x = window.open();
+
+  // the solution is to wrap the display part of the function in a timeout function.  It will wait 1.5
+  // seconds before running the display code.  This gives the canvas a little more time to return
+  // the data.  There's probably a better way to do this with Promises and Asynch functions 
+  // but we'd need to look up the right way to do it.
+  setTimeout( function(params) {
+    let [x, imgData] = params;
+    console.log('opening tab');
+    let iframe = "<iframe width='100%' height='100%' src='" + imgData + "'></iframe>"
+    x.document.open();
+    x.document.write(iframe);
+    x.document.close();
+  }, 5000, [x, imgData]);
+}
+
+
+
+this.dependOn = ['download','filter0', 'filter1', 'filter2', 'filter3', 'filter4', 'filter5', 'saveSettings','drawHistogram','redraw'];
 this.depend = function() {
+
+  if (env.download == true) {
+    smartdown.setVariable('download', false);
+    exportImage();
+  }
+
+
   if (env.filter0 == true) {
     smartdown.setVariable('filter0', false);
     activeFilter = 0;

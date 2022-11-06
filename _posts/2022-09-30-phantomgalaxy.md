@@ -35,7 +35,7 @@ Check out [Notes](/pages/telescopeNotes) if you want to learn more about how I d
 
 
 # :::: loading
-This page is reading telescope files.  Please be patient.
+This page is reading telescope files.  It's approximately 100MB so it may take a minute depending on the speed of your connection.  It's worth the wait!
 # ::::
 
 
@@ -46,14 +46,14 @@ F770W [](:XuseF770W) [](:-color1/0/5/0.1)[show settings](:=filter0=true)
 F1000W [](:XuseF1000W) [](:-color2/0/5/0.1)[show settings](:=filter1=true)
 F1130W [](:XuseF1130W) [](:-color3/0/5/0.1)[show settings](:=filter2=true)
 F2100W [](:XuseF2100W) [](:-color4/0/5/0.1)[show settings](:=filter3=true)
-[Redraw](:=redraw=true)
+[Redraw](:=redraw=true) 
 
 # --outlinebox
 # ::::
 
 
 ```javascript /autoplay/kiosk
-//smartdown.import=/assets/libs/fits.js
+//smartdown.import=../../assets/libs/fits.js
 
 
 let dataNames = ['f770w', 'f1000w', 'f1130w', 'f2100w'];
@@ -76,6 +76,7 @@ smartdown.setVariable('useF1000W', true);
 smartdown.setVariable('useF1130W', false);
 smartdown.setVariable('useF2100W', false);
 smartdown.setVariable('redraw',false);
+smartdown.setVariable('download', false);
 smartdown.setVariable('color1', 1);
 smartdown.setVariable('color2', 3);
 smartdown.setVariable('color3', 5);
@@ -281,8 +282,25 @@ window.addEventListener('resize', function(event){
   draw();
 });
 
-this.dependOn = ['filter0','filter1', 'filter2', 'filter3', 'saveSettings','drawHistogram','redraw'];
+function exportImage() {
+  const imgData = canvas.toDataURL("image/jpg");
+  let iframe = "<iframe width='100%' height='100%' src='" + imgData + "'></iframe>"
+  let x = window.open();
+  x.document.open();
+  x.document.write(iframe);
+  x.document.close();
+
+
+}
+
+
+this.dependOn = ['download','filter0','filter1', 'filter2', 'filter3', 'saveSettings','drawHistogram','redraw'];
 this.depend = function() {
+
+  if (env.download == true) {
+    smartdown.setVariable('download', false);
+    exportImage();
+  }
 
   // here's the repeated code that should be fixed
   if (env.filter0 == true) {
