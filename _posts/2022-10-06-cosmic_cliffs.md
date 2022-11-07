@@ -36,11 +36,12 @@ Transfer infrared light captured by the JWST into light from the visual spectrum
 ### Telescope Intro
 These are the cosmic cliffs of the [Carina Nebula](https://en.wikipedia.org/wiki/Carina_Nebula). It has been constructed with javascript on this website with data directly from the [James Webb Space Telescope's](https://webb.nasa.gov/) NIRCam instrument. I found the data available for free on [MAST observations](https://mast.stsci.edu/portal/Mashup/Clients/Mast/Portal.html). You can change the color assignments for each filter as well as the stretch function. Play around and see what you can make.
 [Notes](/pages/telescopeNotes).
-
-![thumbnail](https://jwst-docs.stsci.edu/files/97978094/97978104/1/1596073152120/NIRCam_filters_modules.png)
 # --outlinebox
 # ::::
 
+# :::: filters
+![](../../assets/images/NIRCam_filters_modules.png)
+# ::::
 
 # :::: loading
 This page is reading telescope files. It's worth the wait!
@@ -55,7 +56,7 @@ F200W [](:XuseFilter3) [](:-color3/0/5/0.1)[show settings](:=filter2=true)
 F335M [](:XuseFilter4) [](:-color4/0/5/0.1)[show settings](:=filter3=true)
 F444W [](:XuseFilter5) [](:-color5/0/5/0.1)[show settings](:=filter4=true)
 F470N [](:XuseFilter6) [](:-color6/0/5/0.1)[show settings](:=filter5=true)
-[Redraw](:=redraw=true) 
+[Redraw](:=redraw=true) [Notes](::intro/button,transparent,topleft,closeable,draggable) [Filters](::filters/button,transparent,bottomleft,closeable,draggable) 
 # --outlinebox
 # ::::
 
@@ -330,78 +331,51 @@ function exportImage() {
   }, 5000, [x, imgData]);
 }
 
+function prepareHistogram(filter) {
+  activeFilter = filter;
+  updateFilterVariables();
+  drawHistogram();
+  smartdown.showDisclosure('filterSettings', '', 'center,closeable,lightbox');
+} 
 
-
-this.dependOn = ['download','filter0', 'filter1', 'filter2', 'filter3', 'filter4', 'filter5', 'saveSettings','drawHistogram','redraw'];
+this.dependOn = ['download','filter0', 'filter1', 'filter2', 'filter3', 'filter4', 'filter5', 'saveSettings','drawHistogram','redraw', 'color1', 'color2', 'color3', 'color4', 'color5', 'color6', 'useFilter1', 'useFilter2', 'useFilter3', 'useFilter4', 'useFilter5', 'useFilter6'];
 this.depend = function() {
 
   if (env.download == true) {
     smartdown.setVariable('download', false);
     exportImage();
-  }
-
-
-  if (env.filter0 == true) {
+  } else if (env.filter0 == true) {
     smartdown.setVariable('filter0', false);
-    activeFilter = 0;
-    updateFilterVariables();
-    drawHistogram();
-    smartdown.showDisclosure('filterSettings', '', 'center,closeable,lightbox');
-  }
-
-  if (env.filter1 == true) {
+    prepareHistogram(0);
+  } else if (env.filter1 == true) {
     smartdown.setVariable('filter1', false);
-    activeFilter = 1;
-    updateFilterVariables();
-    drawHistogram();
-    smartdown.showDisclosure('filterSettings', '', 'center,closeable,lightbox');
-  }
-
-  if (env.filter2 == true) {
+    prepareHistogram(1);
+  } else if (env.filter2 == true) {
     smartdown.setVariable('filter2', false);
-    activeFilter = 2;
-    updateFilterVariables();
-    drawHistogram();
-    smartdown.showDisclosure('filterSettings', '', 'center,closeable,lightbox');
-  }
-
-  if (env.filter3 == true) {
+    prepareHistogram(2);
+  } else if (env.filter3 == true) {
     smartdown.setVariable('filter3', false);
-    activeFilter = 3;
-    updateFilterVariables();
-    drawHistogram();
-    smartdown.showDisclosure('filterSettings', '', 'center,closeable,lightbox');
-  }
-
-  if (env.filter4 == true) {
+    prepareHistogram(3);
+  } else if (env.filter4 == true) {
     smartdown.setVariable('filter4', false);
-    activeFilter = 4;
-    updateFilterVariables();
-    drawHistogram();
-    smartdown.showDisclosure('filterSettings', '', 'center,closeable,lightbox');
-  }
-
-  if (env.filter5 == true) {
+    prepareHistogram(4);
+  } else if (env.filter5 == true) {
     smartdown.setVariable('filter5', false);
-    activeFilter = 5;
-    updateFilterVariables();
-    drawHistogram();
-    smartdown.showDisclosure('filterSettings', '', 'center,closeable,lightbox');
-  }
-
-  // these events are triggered by the histogram popup
-  if (env.saveSettings == true) {
+    prepareHistogram(5);
+  } else if (env.saveSettings == true) {
     smartdown.setVariable('saveSettings', false);
     saveFilterVariables();  
-  }
-
-  if (env.drawHistogram == true) {
+  } else if (env.drawHistogram == true) {
     smartdown.setVariable('drawHistogram', false);
     drawHistogram();  
-  }
-  if (env.redraw == true){
+  } else if (env.redraw == true){
     smartdown.setVariable('redraw',false);
     draw();
+  } else {
+    // a filter checkbox or a color slider was changed
+    // automatic redraw
+    // update the color swatches
+    
   }
 }
 
