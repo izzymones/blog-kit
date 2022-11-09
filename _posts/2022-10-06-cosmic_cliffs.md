@@ -50,18 +50,30 @@ This page is reading telescope files. It's worth the wait!
 
 # :::: panel
 # --outlinebox p
-F090W [](:XuseFilter1) [](:-color1/0/5/0.1)[show settings](:=filter0=true)
-F187N [](:XuseFilter2) [](:-color2/0/5/0.1)[show settings](:=filter1=true)
-F200W [](:XuseFilter3) [](:-color3/0/5/0.1)[show settings](:=filter2=true)
-F335M [](:XuseFilter4) [](:-color4/0/5/0.1)[show settings](:=filter3=true)
-F444W [](:XuseFilter5) [](:-color5/0/5/0.1)[show settings](:=filter4=true)
-F470N [](:XuseFilter6) [](:-color6/0/5/0.1)[show settings](:=filter5=true)
-[Redraw](:=redraw=true) [Notes](::intro/button,transparent,topleft,closeable,draggable) [Filters](::filters/button,transparent,bottomleft,closeable,draggable) 
+[](:!c1|markdown)F090W [](:XuseFilter1) [](:-color1/0/5/0.1)[:gear:](:=filter0=filter0+1)
+[](:!c2|markdown)F187N [](:XuseFilter2) [](:-color2/0/5/0.1)[:gear:](:=filter1=filter1+1)
+[](:!c3|markdown)F200W [](:XuseFilter3) [](:-color3/0/5/0.1)[:gear:](:=filter2=filter2+1)
+[](:!c4|markdown)F335M [](:XuseFilter4) [](:-color4/0/5/0.1)[:gear:](:=filter3=filter3+1)
+[](:!c5|markdown)F444W [](:XuseFilter5) [](:-color5/0/5/0.1)[:gear:](:=filter4=filter4+1)
+[](:!c6|markdown)F470N [](:XuseFilter6) [](:-color6/0/5/0.1)[:gear:](:=filter5=filter5+1)
+[Notes](::intro/button,transparent,topleft,closeable,draggable) [Filters](::filters/button,transparent,bottomleft,closeable,draggable) [jpg](:=jpg=jpg+1)
 # --outlinebox
 # ::::
 
 
 ```javascript /autoplay/kiosk
+smartdown.importCssCode(
+`
+.reducedfont {
+  font-size: 16px;
+}
+`);
+
+const controlPanel = document.getElementById('panel');
+controlPanel.classList.add('reducedfont');
+
+
+
 //smartdown.import=../../assets/libs/fits.js
 let dataNames = ['f090w', 'f187n', 'f200w', 'f335m', 'f444w', 'f470n'];
 let min = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
@@ -83,8 +95,7 @@ smartdown.setVariable('useFilter3', true);
 smartdown.setVariable('useFilter4', true);
 smartdown.setVariable('useFilter5', true);
 smartdown.setVariable('useFilter6', true);
-smartdown.setVariable('redraw',false);
-smartdown.setVariable('download', false);
+smartdown.setVariable('jpg', 0);
 smartdown.setVariable('color1', 1);
 smartdown.setVariable('color2', 2);
 smartdown.setVariable('color3', 3);
@@ -95,28 +106,14 @@ smartdown.setVariable('setFilter', dataNames[activeFilter]);
 smartdown.setVariable('curveFunction', stretchFunction[activeFilter]);
 smartdown.setVariable('min', min[activeFilter]);
 smartdown.setVariable('max', max[activeFilter]);
-smartdown.setVariable('saveSettings', false);
-smartdown.setVariable('drawHistogram', false);
-smartdown.setVariable('filter0', 'false');
-smartdown.setVariable('filter1', 'false');
-smartdown.setVariable('filter2', 'false');
-smartdown.setVariable('filter3', 'false');
-smartdown.setVariable('filter4', 'false');
-smartdown.setVariable('filter5', 'false');
+smartdown.setVariable('filter0', 0);
+smartdown.setVariable('filter1', 0);
+smartdown.setVariable('filter2', 0);
+smartdown.setVariable('filter3', 0);
+smartdown.setVariable('filter4', 0);
+smartdown.setVariable('filter5', 0);
 
 
-async function getImageData(filenameBase) {
-  return getImageDataFromFITS(filenameBase);
-}
-
-smartdown.showDisclosure('loading', '', 'center,lightbox');
-dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f090w_i2d_match'));
-dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f187n_i2d_match'));
-dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f200w_i2d_match'));
-dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f335m_i2d_match'));
-dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f444w_i2d_match'));
-dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_f444w-f470n_i2d_match'));
-smartdown.hideDisclosure('loading', '', '');
 
 
 this.div.style.width = '100%';
@@ -137,6 +134,7 @@ sizeCanvas();
 
 
 function drawHistogram() {
+  if (dataArrays.length == 0){return;}
   let div = document.getElementById('div_playable_2');
   let data2d = dataArrays[activeFilter];
   let histData = [];
@@ -174,7 +172,12 @@ function saveFilterVariables() {
   actualStretchFunction[activeFilter] = new Function('x', 'return ' + stretchFunction[activeFilter] + ';');
   min[activeFilter] = env.min;
   max[activeFilter] = env.max;
+  draw();
 }
+
+
+window.saveFilterVariables = saveFilterVariables;
+window.drawHistogram = drawHistogram
 
 
 function spectrumProcess(number){
@@ -233,10 +236,33 @@ function activeFunctions() {
   return f;
 }
 
-let r = dataArrays[0].length;
-let c = 0;
-if (r > 0) { c = dataArrays[0][0].length; }
-console.log(r, c);
+
+function prepareHistogram(filter) {
+  if (dataArrays.length == 0){return;}
+  activeFilter = filter;
+  updateFilterVariables();
+  drawHistogram();
+  smartdown.showDisclosure('filterSettings', '', 'center,closeable,lightbox');
+} 
+
+
+function buildColorString(r, g, b) {
+  const rpadded = r.toString(16).padStart(2, '0');
+  const gpadded = g.toString(16).padStart(2, '0');
+  const bpadded = b.toString(16).padStart(2, '0');
+  return `#${rpadded}${gpadded}${bpadded}`;
+}
+
+function buildColor(n) {
+  let rgb = spectrumProcess(n);
+  for(let i = 0; i < rgb.length; i++) { rgb[i] = Math.floor(rgb[i] * 255); }
+    const colorName = buildColorString(rgb[0],rgb[1],rgb[2]);
+  return `![swatch](${colorName})`;
+}
+
+
+let r;
+let c;
 function draw() {
   let f1color = spectrumProcess(env.color1);
   let f2color = spectrumProcess(env.color2);
@@ -305,88 +331,99 @@ window.addEventListener('resize', function(event){
 });
 
 
-
-// this is the new exportImage function that works
-function exportImage() {
-
-  // this function was taking too long.  Instead of waiting for this function to finish, it was 
-  // going ahead and trying to write the imgData to the new tab.  But the data wasn't there yet.
-  // This resulted in a blank page if the page was full resolution.
-  // It doesn't happen at all on my computer because my CPU might be a little faster.
-  const imgData = canvas.toDataURL("image/jpg");
-
-  let x = window.open();
-
-  // the solution is to wrap the display part of the function in a timeout function.  It will wait 1.5
-  // seconds before running the display code.  This gives the canvas a little more time to return
-  // the data.  There's probably a better way to do this with Promises and Asynch functions 
-  // but we'd need to look up the right way to do it.
-  setTimeout( function(params) {
-    let [x, imgData] = params;
-    console.log('opening tab');
-    let iframe = "<iframe width='100%' height='100%' src='" + imgData + "'></iframe>"
-    x.document.open();
-    x.document.write(iframe);
-    x.document.close();
-  }, 5000, [x, imgData]);
+this.dependOn.filter0 = () => {
+  prepareHistogram(0);
 }
-
-function prepareHistogram(filter) {
-  activeFilter = filter;
-  updateFilterVariables();
-  drawHistogram();
-  smartdown.showDisclosure('filterSettings', '', 'center,closeable,lightbox');
-} 
-
-this.dependOn = ['download','filter0', 'filter1', 'filter2', 'filter3', 'filter4', 'filter5', 'saveSettings','drawHistogram','redraw', 'color1', 'color2', 'color3', 'color4', 'color5', 'color6', 'useFilter1', 'useFilter2', 'useFilter3', 'useFilter4', 'useFilter5', 'useFilter6'];
-this.depend = function() {
-
-  if (env.download == true) {
-    smartdown.setVariable('download', false);
-    exportImage();
-  } else if (env.filter0 == true) {
-    smartdown.setVariable('filter0', false);
-    prepareHistogram(0);
-  } else if (env.filter1 == true) {
-    smartdown.setVariable('filter1', false);
-    prepareHistogram(1);
-  } else if (env.filter2 == true) {
-    smartdown.setVariable('filter2', false);
-    prepareHistogram(2);
-  } else if (env.filter3 == true) {
-    smartdown.setVariable('filter3', false);
-    prepareHistogram(3);
-  } else if (env.filter4 == true) {
-    smartdown.setVariable('filter4', false);
-    prepareHistogram(4);
-  } else if (env.filter5 == true) {
-    smartdown.setVariable('filter5', false);
-    prepareHistogram(5);
-  } else if (env.saveSettings == true) {
-    smartdown.setVariable('saveSettings', false);
-    saveFilterVariables();  
-  } else if (env.drawHistogram == true) {
-    smartdown.setVariable('drawHistogram', false);
-    drawHistogram();  
-  } else if (env.redraw == true){
-    smartdown.setVariable('redraw',false);
-    draw();
-  } else {
-    // a filter checkbox or a color slider was changed
-    // automatic redraw
-    // update the color swatches
-    
+this.dependOn.filter1 = () => {
+  prepareHistogram(1);
+}
+this.dependOn.filter2 = () => {
+  prepareHistogram(2);
+}
+this.dependOn.filter3 = () => {
+  prepareHistogram(3);
+}
+this.dependOn.filter4 = () => {
+  prepareHistogram(4);
+}
+this.dependOn.filter5 = () => {
+  prepareHistogram(5);
+}
+this.dependOn.color1 = () => {
+  const color = buildColor(env.color1);
+  smartdown.set('c1', color);
+  draw()
+}
+this.dependOn.color2 = () => {
+  const color = buildColor(env.color2);
+  smartdown.set('c2', color);
+  draw()
+}
+this.dependOn.color3 = () => {
+  const color = buildColor(env.color3);
+  smartdown.set('c3', color);
+  draw()
+}
+this.dependOn.color4 = () => {
+  const color = buildColor(env.color4);
+  smartdown.set('c4', color);
+  draw()
+}
+this.dependOn.color5 = () => {
+  const color = buildColor(env.color5);
+  smartdown.set('c5', color);
+  draw()
+}
+this.dependOn.color6 = () => {
+  const color = buildColor(env.color6);
+  smartdown.set('c6', color);
+  draw()
+}
+this.dependOn.jpg = () => {
+  if (env.jpg > 0){
+    let x = window.open();
+    const p = x.document.createElement('p');
+    let img = new Image();
+    img.src = canvas.toDataURL('image/jpg');
+    x.document.body.appendChild(img);
   }
 }
+this.dependOn.useFilter1 = draw;
+this.dependOn.useFilter2 = draw;
+this.dependOn.useFilter3 = draw;
+this.dependOn.useFilter4 = draw;
+this.dependOn.useFilter5 = draw;
+this.dependOn.useFilter6 = draw;
+
+
+async function getImageData(filenameBase) {
+  return getImageDataFromFITS(filenameBase);
+}
+
+smartdown.showDisclosure('loading', '', 'center,lightbox');
+dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f090w_i2d_match'));
+dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f187n_i2d_match'));
+dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f200w_i2d_match'));
+dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f335m_i2d_match'));
+dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f444w_i2d_match'));
+dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_f444w-f470n_i2d_match'));
+smartdown.hideDisclosure('loading', '', '');
+
+
+r = dataArrays[0].length;
+c = 0;
+if (r > 0) { c = dataArrays[0][0].length; }
+console.log(r, c);
 
 
 draw();
 ```
 # :::: filterSettings
 # --aliceblue
-active filter: [](:!setFilter) [redraw histogram](:=redrawHistogram=true) [Save and Close](:=close=true)
+active filter: [](:!setFilter) [redraw histogram](:=redrawHistogram=redrawHistogram+1) [Save and Close](:=close=close+1)
 min [](:?min|number) max [](:?max|number)
 stretch function: [](:?curveFunction) [formatting tips](::formatting)
+
 # :::: formatting
 Enter a single variable function using variable `x`.  Functions need to be written in javascript.  
 | Expression  | Javascript |
@@ -396,6 +433,7 @@ Enter a single variable function using variable `x`.  Functions need to be writt
 | $\text{asinh}(x)$  | `Math.asinh(x)`    |
 You can find a list of javascript **Math** functions [here](https://www.w3schools.com/jsref/jsref_obj_math.asp).
 # ::::
+
 # --aliceblue
 
 ```javascript /plotly/autoplay
@@ -404,20 +442,20 @@ this.div.style.height = '100%';
 this.div.style.margin = 'auto';
 
 
-smartdown.setVariable('redrawHistogram', false);
-smartdown.setVariable('close', false);
+smartdown.setVariable('redrawHistogram', 0);
+smartdown.setVariable('close', 0);
 
-
-this.dependOn = ['redrawHistogram', 'close'];
-this.depend = function() {
-  if (env.redrawHistogram == true) {
-    smartdown.setVariable('redrawHistogram', false);
-    smartdown.setVariable('saveSettings', true);
-    smartdown.setVariable('drawHistogram', true);
+this.dependOn.redrawHistogram = () => {
+  if (window.saveFilterVariables) {
+    window.saveFilterVariables();
+    window.drawHistogram();
   }
-  if (env.close == true) {
-    smartdown.setVariable('close', false);
-    smartdown.setVariable('saveSettings', true);
+}
+
+
+this.dependOn.close = () => {
+  if (window.saveFilterVariables) {
+    window.saveFilterVariables()
     smartdown.hideDisclosure('filterSettings', '',  '');
   }
 }

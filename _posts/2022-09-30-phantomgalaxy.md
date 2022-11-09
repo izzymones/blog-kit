@@ -3,7 +3,7 @@ title: 'Phantom Galaxy'
 smartdown: true
 header: 'none'
 ---
-
+Transfer infrared light captured by the JWST into light from the visual spectrum to make a cool image.
 .
 .
 .
@@ -39,14 +39,19 @@ This page is reading telescope files.  It's approximately 100MB so it may take a
 # ::::
 
 
+# :::: filters
+![](../../assets/images/MIRI_IMAGING2.png)
+# ::::
+
+
 # :::: panel
 # --outlinebox p
-This disclosable if for app controls
 F770W [](:XuseF770W) [](:-color1/0/5/0.1)[show settings](:=filter0=true)
 F1000W [](:XuseF1000W) [](:-color2/0/5/0.1)[show settings](:=filter1=true)
 F1130W [](:XuseF1130W) [](:-color3/0/5/0.1)[show settings](:=filter2=true)
 F2100W [](:XuseF2100W) [](:-color4/0/5/0.1)[show settings](:=filter3=true)
-[Redraw](:=redraw=true) 
+[Redraw](:=redraw=true) [Filters](::filters/button,transparent,bottomleft,closeable,draggable) 
+
 
 # --outlinebox
 # ::::
