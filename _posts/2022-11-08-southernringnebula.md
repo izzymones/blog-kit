@@ -1,5 +1,5 @@
 ---
-title: 'The Cosmic Cliffs'
+title: 'Southern Ring Nebula'
 smartdown: true
 header: 'none'
 ---
@@ -34,9 +34,7 @@ Transfer infrared light captured by the JWST into light from the visual spectrum
 # :::: intro
 # --outlinebox int
 ### Telescope Intro
-These are the cosmic cliffs of the [Carina Nebula](https://en.wikipedia.org/wiki/Carina_Nebula). This app displays telescope data from the [James Webb Space Telescope's](https://webb.nasa.gov/) NIRCam instrument. I've downloaded the original [FITS](https://fits.gsfc.nasa.gov/fits_home.html) files from the [MAST archive](https://mast.stsci.edu/portal/Mashup/Clients/Mast/Portal.html). I used the [astropy](https://www.astropy.org/) and [reproject](https://reproject.readthedocs.io/en/stable/#) python libraries to reduce the size of some of the FITS files so they can be downloaded to your browser more quickly. You can see the scripts I used [here](https://github.com/izzymones/fits-file-processing).  This page reads FITS files directly so what you are seeing is the actual data from the telescope, not a jpeg or some other image format.  
-
-You can change the color assignments for each filter. I also display a histogram for each filter data.  You can choose the minimum and maximum data values and choose a stretch function if you want. Play around and see what you can make.
+This is the [Southern Ring Nebula](https://en.wikipedia.org/wiki/NGC_3132). It has been constructed with javascript on this website with data directly from the [James Webb Space Telescope's](https://webb.nasa.gov/) NIRCam instrument. I found the data available for free on [MAST observations](https://mast.stsci.edu/portal/Mashup/Clients/Mast/Portal.html). You can change the color assignments for each filter as well as the stretch function. Play around and see what you can make.
 [Notes](/pages/telescopeNotes).
 # --outlinebox
 # ::::
@@ -54,9 +52,9 @@ This page is reading telescope files. [](:!numLoaded) / 6 files loaded. It's wor
 # --outlinebox p
 [](:!c1|markdown)F090W [](:XuseFilter1) [](:-color1/0/5/0.1)[:gear:](:=filter0=filter0+1)
 [](:!c2|markdown)F187N [](:XuseFilter2) [](:-color2/0/5/0.1)[:gear:](:=filter1=filter1+1)
-[](:!c3|markdown)F200W [](:XuseFilter3) [](:-color3/0/5/0.1)[:gear:](:=filter2=filter2+1)
-[](:!c4|markdown)F335M [](:XuseFilter4) [](:-color4/0/5/0.1)[:gear:](:=filter3=filter3+1)
-[](:!c5|markdown)F444W [](:XuseFilter5) [](:-color5/0/5/0.1)[:gear:](:=filter4=filter4+1)
+[](:!c3|markdown)F212N [](:XuseFilter3) [](:-color3/0/5/0.1)[:gear:](:=filter2=filter2+1)
+[](:!c4|markdown)F356W [](:XuseFilter4) [](:-color4/0/5/0.1)[:gear:](:=filter3=filter3+1)
+[](:!c5|markdown)F405N [](:XuseFilter5) [](:-color5/0/5/0.1)[:gear:](:=filter4=filter4+1)
 [](:!c6|markdown)F470N [](:XuseFilter6) [](:-color6/0/5/0.1)[:gear:](:=filter5=filter5+1)
 [Notes](::intro/button,transparent,topleft,closeable,draggable) [Filters](::filters/button,transparent,bottomleft,closeable,draggable) [jpg](:=jpg=jpg+1)
 # --outlinebox
@@ -79,7 +77,7 @@ controlPanel.classList.add('reducedfont');
 //smartdown.import=../../assets/libs/fits.js
 let dataNames = ['f090w', 'f187n', 'f200w', 'f335m', 'f444w', 'f470n'];
 let min = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
-let max = [8.0, 85.0, 60.0, 40.0, 15.0, 75.0];
+let max = [15.0, 75.0, 85.0, 35.0, 65.0, 50.0];
 let stretchFunction = ['x', 'x', 'x', 'x', 'x', 'x'];
 let actualStretchFunction = [];
 
@@ -101,9 +99,9 @@ smartdown.setVariable('jpg', 0);
 smartdown.setVariable('color1', 1);
 smartdown.setVariable('color2', 2);
 smartdown.setVariable('color3', 3);
-smartdown.setVariable('color4', 4.5);
+smartdown.setVariable('color4', 4);
 smartdown.setVariable('color5', 5);
-smartdown.setVariable('color6', 4);
+smartdown.setVariable('color6', 5);
 smartdown.setVariable('setFilter', dataNames[activeFilter]);
 smartdown.setVariable('curveFunction', stretchFunction[activeFilter]);
 smartdown.setVariable('min', min[activeFilter]);
@@ -114,7 +112,7 @@ smartdown.setVariable('filter2', 0);
 smartdown.setVariable('filter3', 0);
 smartdown.setVariable('filter4', 0);
 smartdown.setVariable('filter5', 0);
-smartdown.setVariable('numLoaded', 0);
+smartdown.setVariable('numLoaded', 0)
 
 
 
@@ -276,19 +274,17 @@ function draw() {
   let imagedata = context.createImageData(canvas.width, canvas.height);
   let w = canvas.width;
   let h = canvas.height;
-  let canvas_r = w < c ? Math.floor(r * w / c) : r;
+  let yshift = (r - h) / 4 + 75 ;
   for (let y=0; y<canvas.height; y++) {
       for (let x=0; x<canvas.width; x++) {
-        let nx = w < c ? Math.floor((x / w) * c) : x; 
-        let ny = 0;
-        if (canvas_r < r) { 
-          ny =  Math.floor(y / canvas_r * r); // we need to scale ny to the r scale
-          if (y < canvas_r) { ny = r - ny; }  // if we're still on the picture invert it 
-                                              // (the picture is upsidedown relative to y direction)
-        } else { ny = h - y; }
-      
-
-        let pixelindex = (y * canvas.width + x) * 4;
+        // changing this code to fit the image to the viewer's screen
+        // we just scale the pixel position the same position in the 
+        // data array and round to the nearest integer to get an array index
+        // It's sort of like sampling due to some round off error
+        let ydown = h - y;
+        let nx = w < c ? Math.floor((x / w) * c) : x; // fit the picture to the width
+        let ny = h < r ? Math.floor(ydown / w * r) + yshift: ydown;
+        let pixelindex = (y * w + x) * 4;
         imagedata.data[pixelindex+0] = 0;
         imagedata.data[pixelindex+1] = 0;
         imagedata.data[pixelindex+2] = 0;
@@ -407,17 +403,17 @@ async function getImageData(filenameBase) {
 }
 
 smartdown.showDisclosure('loading', '', 'center,lightbox');
-dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f090w_i2d_match'));
+dataArrays.push(await getImageData('../../assets/data/jw02733-o001_t001_nircam_clear-f090w_i2d_match'));
 smartdown.setVariable('numLoaded',env.numLoaded + 1);
-dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f187n_i2d_match'));
+dataArrays.push(await getImageData('../../assets/data/jw02733-o001_t001_nircam_clear-f187n_i2d_match'));
 smartdown.setVariable('numLoaded',env.numLoaded + 1);
-dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f200w_i2d_match'));
+dataArrays.push(await getImageData('../../assets/data/jw02733-o001_t001_nircam_clear-f212n_i2d_match'));
 smartdown.setVariable('numLoaded',env.numLoaded + 1);
-dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f335m_i2d_match'));
+dataArrays.push(await getImageData('../../assets/data/jw02733-o001_t001_nircam_clear-f356w_i2d_match'));
 smartdown.setVariable('numLoaded',env.numLoaded + 1);
-dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_clear-f444w_i2d_match'));
+dataArrays.push(await getImageData('../../assets/data/jw02733-o001_t001_nircam_f405n-f444w_i2d_match'));
 smartdown.setVariable('numLoaded',env.numLoaded + 1);
-dataArrays.push(await getImageData('../../assets/data/jw02731-o001_t017_nircam_f444w-f470n_i2d_match'));
+dataArrays.push(await getImageData('../../assets/data/jw02733-o001_t001_nircam_f444w-f470n_i2d_match'));
 smartdown.setVariable('numLoaded',env.numLoaded + 1);
 smartdown.hideDisclosure('loading', '', '');
 
