@@ -274,16 +274,22 @@ function draw() {
   let imagedata = context.createImageData(canvas.width, canvas.height);
   let w = canvas.width;
   let h = canvas.height;
-  let yshift = (r - h) / 4 + 75 ;
+  let canvas_r = w < c ? Math.floor(r * w / c) : r;
+  let yshift = canvas_r > h ? Math.floor((canvas_r-h)/2): 0; 
+
   for (let y=0; y<canvas.height; y++) {
       for (let x=0; x<canvas.width; x++) {
-        // changing this code to fit the image to the viewer's screen
-        // we just scale the pixel position the same position in the 
-        // data array and round to the nearest integer to get an array index
-        // It's sort of like sampling due to some round off error
-        let ydown = h - y;
-        let nx = w < c ? Math.floor((x / w) * c) : x; // fit the picture to the width
-        let ny = h < r ? Math.floor(ydown / w * r) + yshift: ydown;
+        let nx = w < c ? Math.floor((x / w) * c) : x; 
+        let ny = 0;
+        if (canvas_r < r) { 
+          ny =  Math.floor(y / canvas_r * r); // we need to scale ny to the r scale
+          let scaledYshift = Math.floor(yshift / canvas_r * r);
+          if (y < canvas_r) { ny = r - ny; }  // if we're still on the picture invert it 
+                                              // (the picture is upsidedown relative to y direction)
+          ny -= scaledYshift;
+
+        } else { ny = h - y;}  // this doesn't manage the yshift yet
+
         let pixelindex = (y * w + x) * 4;
         imagedata.data[pixelindex+0] = 0;
         imagedata.data[pixelindex+1] = 0;
