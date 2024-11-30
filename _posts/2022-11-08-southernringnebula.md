@@ -358,33 +358,33 @@ this.dependOn.filter5 = () => {
   prepareHistogram(5);
 }
 this.dependOn.color1 = () => {
-  const color = buildColor(env.color1);
-  smartdown.set('c1', color);
+  // const color = buildColor(env.color1);
+  // smartdown.set('c1', color);
   draw()
 }
 this.dependOn.color2 = () => {
-  const color = buildColor(env.color2);
-  smartdown.set('c2', color);
+  // const color = buildColor(env.color2);
+  // smartdown.set('c2', color);
   draw()
 }
 this.dependOn.color3 = () => {
-  const color = buildColor(env.color3);
-  smartdown.set('c3', color);
+  // const color = buildColor(env.color3);
+  // smartdown.set('c3', color);
   draw()
 }
 this.dependOn.color4 = () => {
-  const color = buildColor(env.color4);
-  smartdown.set('c4', color);
+  // const color = buildColor(env.color4);
+  // smartdown.set('c4', color);
   draw()
 }
 this.dependOn.color5 = () => {
-  const color = buildColor(env.color5);
-  smartdown.set('c5', color);
+  // const color = buildColor(env.color5);
+  // smartdown.set('c5', color);
   draw()
 }
 this.dependOn.color6 = () => {
-  const color = buildColor(env.color6);
-  smartdown.set('c6', color);
+  // const color = buildColor(env.color6);
+  // smartdown.set('c6', color);
   draw()
 }
 this.dependOn.jpg = () => {
