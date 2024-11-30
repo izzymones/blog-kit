@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>
+    Vector Field - Izzy&#39;s Blog
+    
+  </title>
+
+  <meta name="description" content="## Vector Field Assignment This is an explanation of the playable. ```javascript /autoplay //smartdown.import=https://cdnjs.cloudflare.com/ajax/libs/jsxgraph...">
+
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="/blog-kit/assets/vendor/bootstrap/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="/blog-kit/assets/vendor/fontawesome-free/css/all.min.css">
+
+  <link rel="stylesheet" href="/blog-kit/assets/main.css">
+  <link rel="canonical" href="https://izzymones.github.io/blog-kit/pages/vectorfield/">
+  <link rel="alternate" type="application/rss+xml" title="Izzy&#39;s Blog" href="/blog-kit/feed.xml">
+
+  
+  <link rel=stylesheet href="https://unpkg.com/smartdown/dist/lib/smartdown.css">
+<link rel=stylesheet href="https://unpkg.com/smartdown/dist/lib/fonts.css">
+<script type="text/javascript" src="https://unpkg.com/smartdown/dist/lib/smartdown.js">
+</script>
+<script type="text/javascript" src="https://unpkg.com/smartdown/dist/lib/calc_handlers.js"></script>
+<script type="text/x-smartdown" id="Home">
+## Vector Field Assignment
+
+This is an explanation of the playable.
+
+
+```javascript /autoplay
+//smartdown.import=https://cdnjs.cloudflare.com/ajax/libs/jsxgraph/0.99.7/jsxgraphcore.js
+smartdown.importCssUrl('https://cdnjs.cloudflare.com/ajax/libs/jsxgraph/0.99.7/jsxgraph.css');
+
+// The lines above import the jsxgraph javascript library and css (cascading style sheets) 
+// into smartdown 
+// jsxgraph is a javascript library that helps you write programs that graph functions
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+// This code sets the html style of app within the outer html page.  
+// We set it's width, height and margins 
+const myDiv = this.div;
+myDiv.style.width = '100%';
+myDiv.style.height = '100%';
+myDiv.style.margin = 'auto';
+
+// this creates an html div for the graph to live in
+myDiv.innerHTML = `<div id='box' class='jxgbox' style='height:600px'>`;
+
+let widthPercent = 0.8;  // what percentage of the page width should the app get
+let heightPercent = 0.7; // what percentage of the page height should the app get
+
+let xlow = -20;  // these are the dimensions of our graph
+let xhigh = 20;
+let ylow = -10;
+let yhigh = 10;
+
+// this creates a jsxgraph on the page
+board = JXG.JSXGraph.initBoard('box', {
+  axis:true, 
+  keepaspectratio:true, 
+  boundingbox:[xlow,yhigh,xhigh,ylow],
+  showCopyright:false
+});
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+// This code gets triggered by the web page if the size of the page changes.  For example, if the
+// user resizes the browser page.  We want to update the size of our graph to the new window size.
+// Try resizing the page and see how the graph reacts.  Then uncomment this code out and try the
+// experiment again
+
+this.sizeChanged = function() {
+  board.resizeContainer(window.innerWidth * widthPercent, window.innerHeight * heightPercent);
+};
+this.sizeChanged();
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Now let's graph a function
+
+// let f = function(x) { return x * x / 20; };
+// let fgraph = board.create('functiongraph', [f,xlow, xhigh]);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Now let's graph an arrow
+// Try making the points invisible by setting visible to false
+
+// let p1 = board.create('point', [4.5, 2.0], {visible:true});
+// let p2 = board.create('point', [1.0, 1.0], {visible:true});
+// let l1 = board.create('arrow', [p1, p2]);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+// we can make an array of points
+
+// let pts = [];
+// for (let i=0; i < 20; i++) {
+//   pts.push(board.create('point',[i,5.0], {visible:true}));
+// }
+
+// you can make a two dimensional array
+
+// let A = [];
+// for (let i=0; i < 10; i++) {
+//   let row = []
+//   for (let j=0; j < 10; j++) {
+//     row.push(j);
+//   }
+
+//   A.push(row);
+// }
+
+// You can print things out to the javascript console.  
+// In your browser go to View -> Developer -> Javascript console
+// It should say  Array(10) in the log.  Click on it 
+
+// console.log(A);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+// here is a two dimensional function that returns a vector.
+// Let's see if you can graph a vector field for it.
+
+function g(x,y) { return [x,y**2]; }
+
+let factor = 0.1
+let startpt = [];
+let endpt = [];
+let arrows = [];
+for (let x=-10; x < 10; x++) {
+  let row = []
+  for (let y=-10; y < 10; y++) {
+    let [vx,vy] = g(x,y);
+
+    // fill in these elements to get a vector field
+    let p1 = board.create('point', [x, y], {visible:false});
+    let p2 = board.create('point', [x+vx*(factor), y+vy*factor], {visible:false});
+    let arrow = board.create('arrow', [p1, p2]);
+
+    // you don't need to keep pointers to everything you create on a graph
+    // but it is good practice. 
+    startpt.push(p1);
+    endpt.push(p2);
+    arrows.push(arrow);
+  }
+  arrows.push(row);
+}
+
+// Things to try
+// 1. Try different functions for g(x,y)
+
+
+```
+
+</script>
+
+  
+
+  
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="noheadernavbar navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+
+  <div class="container">
+    <a class="navbar-brand" href="/blog-kit/">  
+      <!-- <img src="/blog-kit/assets/images/wildthinksLogo.svg" height="30"> -->
+    </a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      Menu
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      
+      <ul class="noheadernav navbar-nav ml-auto">
+      
+        <li class="nav-item">
+          <a class="nav-link" href="/blog-kit/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/blog-kit/pages/About/">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/blog-kit/posts">Blog</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+  <!-- Page Header -->
+
+<header id="header-wrapper" class="masthead noheader">
+</header>  
+  
+
+
+
+  <div id="smartdown-outer-container"class="container-fluid smartdown-outer-container smartdown-theme-blogx">
+    <div class="row">
+      <div class="col-xs-12 smartdown-container" id="blog-content">
+      <!-- <div class="col-lg-8 col-md-10 mx-auto smartdown-container" id="blog-content"> -->
+
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <ul class="list-inline text-center">
+          
+          <li class="list-inline-item">
+            <a href="mailto:izzymones@gmail.com">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="far fa-envelope fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          
+          
+          
+          <li class="list-inline-item">
+            <a href="https://github.com/izzymones">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+        </ul>
+        <p class="copyright text-muted">Copyright &copy; Isidore Mones 2024</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/blog-kit/assets/vendor/startbootstrap-clean-blog/js/scripts.js"></script>
+
+<script src="/blog-kit/assets/scripts.js"></script>
+
+
+
+
+  
+  <script>
+  /* global smartdown */
+  var baseURL = '/blog-kit/';
+  var icons = {
+    'hypercube': `/assets/images/Hypercube.svg`,
+    'StalactiteStalagmite': `/assets/images/StalactiteStalagmite.svg`
+  };
+
+  var multiparts = null;
+  var current = null;
+
+
+  function cardLoaded(url, cardKeySubhash, sourceText) {
+    /* eslint no-invalid-this: 0 */
+    sourceText = sourceText.trim();
+    multiparts = smartdown.partitionMultipart(sourceText);
+
+    if (url.endsWith('.md')) {
+      const newPath = url.replace(/\.md$/, '/');
+      current = newPath;
+      history.pushState(null, null, newPath);
+    }
+
+    var output = document.getElementById('blog-content');
+    smartdown.setHome(multiparts._default_, output, function() {
+      document.body.scrollTop = 0; // For Chrome, Safari and Opera
+      document.documentElement.scrollTop = 0; // For IE and Firefox
+
+      if (cardKeySubhash) {
+        const target = document.getElementById(cardKeySubhash);
+        if (target) {
+          target.scrollIntoView();
+        }
+      }
+
+      smartdown.startAutoplay(output);
+    });
+  }
+
+  function loadURL(url) {
+    var oReq = new XMLHttpRequest();
+    let cardKeySubhash = null;
+    const hashPos = url.indexOf('#');
+    if (hashPos >= 0) {
+      cardKeySubhash = url.slice(hashPos + 1);
+    }
+
+    oReq.addEventListener('load', function() {
+      cardLoaded(url, cardKeySubhash, this.responseText);
+    });
+    oReq.open('GET', url);
+    oReq.send();
+  }
+
+  function loadInline() {
+    smartdown.loadCardsFromDocumentScripts();
+    var s = smartdown.smartdownScripts[0];
+
+    cardLoaded(window.location.href, window.location.hash.slice(1), s.text);
+  }
+
+  function cardLoader(cardKey) {
+    console.log('cardLoader', cardKey);
+    var part = multiparts[cardKey];
+    if (part) {
+      var output = document.getElementById('blog-content');
+      smartdown.setHome(part, output, function() {
+        smartdown.startAutoplay(output);
+      });
+    }
+    else {
+      var cardURL = cardKey;
+      if (cardKey.indexOf('http') === 0) {
+        cardURL = cardKey;
+      }
+      else {
+        const expanded = smartdown.expandHrefWithLinkRules(cardURL);
+        // console.log('cardloader', cardURL, expanded);
+        cardURL = expanded;
+      }
+      // else if (cardKey.indexOf('/posts') === 0) {
+      //   cardURL = `${baseURL}${cardKey}`;
+      //   console.log('cardLoader', cardKey, cardURL);
+      // }
+      loadURL(cardURL);
+    }
+  }
+
+  var calcHandlers = smartdown.defaultCalcHandlers;
+  const linkRules = [
+    {
+      prefix: '/posts/',
+      replace: baseURL + '/posts/',
+    },
+    {
+      prefix: '/pages/',
+      replace: baseURL + '/pages/',
+    },
+    {
+      prefix: '/assets/',
+      replace: baseURL + '/assets/',
+    },
+  ];
+
+
+
+  window.addEventListener(
+    'popstate',
+    function(event) {
+      console.log('popstate', event);
+      // const url = document.location.pathname;
+      // if (url.endsWith('/')) {
+      //   const newPath = url.replace(/\/$/, '.md');
+      //   // console.log('popstatex: ', url, newPath, current, window.location.hash);
+      //   if (current && url !== current) {
+      //     loadURL(newPath);
+      //   }
+      // }
+    },
+    false);
+  // window.addEventListener(
+  //   'hashchange',
+  //   function(event) {
+  //     console.log(
+  //       'hashchange document.location.pathname: ' + document.location.pathname,
+  //       JSON.stringify(event.state));
+  //   },
+  //   false);
+
+  smartdown.initialize(icons, `https://unpkg.com/smartdown/dist/`, loadInline, cardLoader, calcHandlers, linkRules);
+</script>
+
+  
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

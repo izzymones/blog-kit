@@ -1,0 +1,1953 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.2">Jekyll</generator><link href="https://izzymones.github.io/blog-kit/feed.xml" rel="self" type="application/atom+xml" /><link href="https://izzymones.github.io/blog-kit/" rel="alternate" type="text/html" /><updated>2024-11-29T20:22:23-08:00</updated><id>https://izzymones.github.io/blog-kit/feed.xml</id><title type="html">Izzy’s Blog</title><subtitle>interactive explorations of physics and whatever else interests me</subtitle><author><name>Isidore Mones</name></author><entry><title type="html">The Cosmic Cliffs</title><link href="https://izzymones.github.io/blog-kit/posts/cosmic_cliffs/" rel="alternate" type="text/html" title="The Cosmic Cliffs" /><published>2022-11-09T00:00:00-08:00</published><updated>2022-11-09T00:00:00-08:00</updated><id>https://izzymones.github.io/blog-kit/posts/cosmic_cliffs</id><content type="html" xml:base="https://izzymones.github.io/blog-kit/posts/cosmic_cliffs/">Transfer infrared light captured by the JWST into light from the visual spectrum to make a cool image.
+
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+
+# :::: intro
+# --outlinebox int
+### Telescope Intro
+These are the cosmic cliffs of the [Carina Nebula](https://en.wikipedia.org/wiki/Carina_Nebula). This app displays telescope data from the [James Webb Space Telescope&apos;s](https://webb.nasa.gov/) NIRCam instrument. I&apos;ve downloaded the original [FITS](https://fits.gsfc.nasa.gov/fits_home.html) files from the [MAST archive](https://mast.stsci.edu/portal/Mashup/Clients/Mast/Portal.html). I used the [astropy](https://www.astropy.org/) and [reproject](https://reproject.readthedocs.io/en/stable/#) python libraries to reduce the size of some of the FITS files so they can be downloaded to your browser more quickly. You can see the scripts I used [here](https://github.com/izzymones/fits-file-processing).  This page reads FITS files directly so what you are seeing is the actual data from the telescope, not a jpeg or some other image format.  
+
+You can change the color assignments for each filter. I also display a histogram for each filter data.  You can choose the minimum and maximum data values and choose a stretch function if you want. Play around and see what you can make.
+[Notes](/pages/telescopeNotes).
+# --outlinebox
+# ::::
+
+# :::: filters
+![](../../assets/images/NIRCam_filters_modules.png)
+# ::::
+
+# :::: loading
+This page is reading telescope files. [](:!numLoaded) / 6 files loaded. It&apos;s worth the wait!
+# ::::
+
+
+# :::: panel
+# --outlinebox p
+[](:!c1|markdown)F090W [](:XuseFilter1) [](:-color1/0/5/0.1)[:gear:](:=filter0=filter0+1)
+[](:!c2|markdown)F187N [](:XuseFilter2) [](:-color2/0/5/0.1)[:gear:](:=filter1=filter1+1)
+[](:!c3|markdown)F200W [](:XuseFilter3) [](:-color3/0/5/0.1)[:gear:](:=filter2=filter2+1)
+[](:!c4|markdown)F335M [](:XuseFilter4) [](:-color4/0/5/0.1)[:gear:](:=filter3=filter3+1)
+[](:!c5|markdown)F444W [](:XuseFilter5) [](:-color5/0/5/0.1)[:gear:](:=filter4=filter4+1)
+[](:!c6|markdown)F470N [](:XuseFilter6) [](:-color6/0/5/0.1)[:gear:](:=filter5=filter5+1)
+[Notes](::intro/button,transparent,topleft,closeable,draggable) [Filters](::filters/button,transparent,bottomleft,closeable,draggable) [jpg](:=jpg=jpg+1)
+# --outlinebox
+# ::::
+
+
+```javascript /autoplay/kiosk
+smartdown.importCssCode(
+`
+.reducedfont {
+  font-size: 16px;
+}
+`);
+
+const controlPanel = document.getElementById(&apos;panel&apos;);
+controlPanel.classList.add(&apos;reducedfont&apos;);
+
+
+
+//smartdown.import=../../assets/libs/fits.js
+let dataNames = [&apos;f090w&apos;, &apos;f187n&apos;, &apos;f200w&apos;, &apos;f335m&apos;, &apos;f444w&apos;, &apos;f470n&apos;];
+let min = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
+let max = [8.0, 85.0, 60.0, 40.0, 15.0, 75.0];
+let stretchFunction = [&apos;x&apos;, &apos;x&apos;, &apos;x&apos;, &apos;x&apos;, &apos;x&apos;, &apos;x&apos;];
+let actualStretchFunction = [];
+
+for (let i = 0; i &lt; 6; i++){
+  actualStretchFunction.push(new Function(&apos;x&apos;, &apos;return &apos; + stretchFunction[i] + &apos;;&apos;));
+}
+
+let activeFilter = 0;
+let dataArrays = [];
+smartdown.showDisclosure(&apos;intro&apos;, &apos;&apos;, &apos;transparent,topleft,closeable,draggable,shadow,outline&apos;);
+smartdown.showDisclosure(&apos;panel&apos;, &apos;&apos;, &apos;transparent,bottomright,draggable,shadow,outline&apos;);
+smartdown.setVariable(&apos;useFilter1&apos;, true);
+smartdown.setVariable(&apos;useFilter2&apos;, true);
+smartdown.setVariable(&apos;useFilter3&apos;, true);
+smartdown.setVariable(&apos;useFilter4&apos;, true);
+smartdown.setVariable(&apos;useFilter5&apos;, true);
+smartdown.setVariable(&apos;useFilter6&apos;, true);
+smartdown.setVariable(&apos;jpg&apos;, 0);
+smartdown.setVariable(&apos;color1&apos;, 1);
+smartdown.setVariable(&apos;color2&apos;, 2);
+smartdown.setVariable(&apos;color3&apos;, 3);
+smartdown.setVariable(&apos;color4&apos;, 4.5);
+smartdown.setVariable(&apos;color5&apos;, 5);
+smartdown.setVariable(&apos;color6&apos;, 4);
+smartdown.setVariable(&apos;setFilter&apos;, dataNames[activeFilter]);
+smartdown.setVariable(&apos;curveFunction&apos;, stretchFunction[activeFilter]);
+smartdown.setVariable(&apos;min&apos;, min[activeFilter]);
+smartdown.setVariable(&apos;max&apos;, max[activeFilter]);
+smartdown.setVariable(&apos;filter0&apos;, 0);
+smartdown.setVariable(&apos;filter1&apos;, 0);
+smartdown.setVariable(&apos;filter2&apos;, 0);
+smartdown.setVariable(&apos;filter3&apos;, 0);
+smartdown.setVariable(&apos;filter4&apos;, 0);
+smartdown.setVariable(&apos;filter5&apos;, 0);
+smartdown.setVariable(&apos;numLoaded&apos;, 0);
+
+
+
+
+this.div.style.width = &apos;100%&apos;;
+this.div.style.height = &apos;100%&apos;;
+this.div.style.margin = &apos;auto&apos;;
+this.div.innerHTML = `&lt;canvas id=&quot;appCanvas&quot;&gt;&lt;/canvas&gt;`;
+let canvas = document.getElementById(&quot;appCanvas&quot;); 
+let context = canvas.getContext(&quot;2d&quot;);
+canvas.width  = window.innerWidth;
+canvas.height = window.innerHeight;
+
+
+function sizeCanvas() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+sizeCanvas();
+
+
+function drawHistogram() {
+  if (dataArrays.length == 0){return;}
+  let div = document.getElementById(&apos;div_playable_2&apos;);
+  let data2d = dataArrays[activeFilter];
+  let histData = [];
+  let f = new Function(&apos;x&apos;, &apos;return &apos; + env.curveFunction + &apos;;&apos;);
+  let min = env.min;
+  let max = env.max;
+  for (let r = 0; r &lt; data2d.length; r++) {
+    for (let c = 0; c &lt; data2d[0].length; c++) {
+      let value = f(data2d[r][c]);
+      if (value &gt;= min &amp;&amp; value &lt;= max) { 
+        histData.push(value);
+      }
+    }
+  }
+  let trace = {
+    x: histData,
+    type: &apos;histogram&apos;,
+    name: &apos;Telescope Data&apos;
+  };
+  let data = [trace];
+  Plotly.newPlot(div, data);
+}
+
+
+function updateFilterVariables() {
+  smartdown.setVariable(&apos;setFilter&apos;, dataNames[activeFilter]);
+  smartdown.setVariable(&apos;curveFunction&apos;, stretchFunction[activeFilter]);
+  smartdown.setVariable(&apos;min&apos;, min[activeFilter]);
+  smartdown.setVariable(&apos;max&apos;, max[activeFilter]);
+}
+
+
+function saveFilterVariables() {
+  stretchFunction[activeFilter] = env.curveFunction;
+  actualStretchFunction[activeFilter] = new Function(&apos;x&apos;, &apos;return &apos; + stretchFunction[activeFilter] + &apos;;&apos;);
+  min[activeFilter] = env.min;
+  max[activeFilter] = env.max;
+  draw();
+}
+
+
+window.saveFilterVariables = saveFilterVariables;
+window.drawHistogram = drawHistogram
+
+
+function spectrumProcess(number){
+  let answer = [0, 0, 0];
+  if (number &lt;= 1 &amp;&amp; number &gt;= 0){
+    answer[0] = 1 - number;
+    answer[2] = 1;
+  }
+  if (number &lt;= 2 &amp;&amp; number &gt; 1){
+    answer[1] = number - 1;
+    answer[2] = 1;
+  }
+  if (number &lt;= 3 &amp;&amp; number &gt; 2){
+    answer[2] = 3 - number;
+    answer[1] = 1;
+  }
+  if (number &lt;= 4 &amp;&amp; number &gt; 3){
+    answer[0] = number - 3;
+    answer[1] = 1;
+  }
+  if (number &lt;= 5 &amp;&amp; number &gt; 4){
+    answer[1] = 5 - number;
+    answer[0] = 1;
+  }
+  if (number &lt;= 6 &amp;&amp; number &gt; 5){
+    answer[2] = number - 5;
+    answer[0] = 1;
+  }
+  return answer
+}
+
+
+function getValue(value, i) {
+    let c = 0;
+  let newvalue = actualStretchFunction[i](value);
+  let newmax = max[i];
+  let newmin = min[i];
+    if (newvalue &gt; newmax) c = 255;
+    else {
+        if (newvalue &gt; newmin) {
+            c = (Math.round((newvalue - newmin) / (newmax - newmin) * 255));
+        }
+    }
+    return c;
+}
+
+
+function activeFunctions() {
+  let f = 0;
+  if (env.useFilter1) {f++;}
+  if (env.useFilter2) {f++;}
+  if (env.useFilter3) {f++;}
+  if (env.useFilter4) {f++;}
+  if (env.useFilter5) {f++;}
+  if (env.useFilter6) {f++;}
+  return f;
+}
+
+
+function prepareHistogram(filter) {
+  if (dataArrays.length == 0){return;}
+  activeFilter = filter;
+  updateFilterVariables();
+  drawHistogram();
+  smartdown.showDisclosure(&apos;filterSettings&apos;, &apos;&apos;, &apos;center,closeable,lightbox&apos;);
+} 
+
+
+function buildColorString(r, g, b) {
+  const rpadded = r.toString(16).padStart(2, &apos;0&apos;);
+  const gpadded = g.toString(16).padStart(2, &apos;0&apos;);
+  const bpadded = b.toString(16).padStart(2, &apos;0&apos;);
+  return `#${rpadded}${gpadded}${bpadded}`;
+}
+
+function buildColor(n) {
+  let rgb = spectrumProcess(n);
+  for(let i = 0; i &lt; rgb.length; i++) { rgb[i] = Math.floor(rgb[i] * 255); }
+    const colorName = buildColorString(rgb[0],rgb[1],rgb[2]);
+  return `![swatch](${colorName})`;
+}
+
+
+let r;
+let c;
+function draw() {
+  let f1color = spectrumProcess(env.color1);
+  let f2color = spectrumProcess(env.color2);
+  let f3color = spectrumProcess(env.color3);
+  let f4color = spectrumProcess(env.color4);
+  let f5color = spectrumProcess(env.color5);
+  let f6color = spectrumProcess(env.color6);
+  let imagedata = context.createImageData(canvas.width, canvas.height);
+  let w = canvas.width;
+  let h = canvas.height;
+  let canvas_r = w &lt; c ? Math.floor(r * w / c) : r;
+  for (let y=0; y&lt;canvas.height; y++) {
+      for (let x=0; x&lt;canvas.width; x++) {
+        let nx = w &lt; c ? Math.floor((x / w) * c) : x; 
+        let ny = 0;
+        if (canvas_r &lt; r) { 
+          ny =  Math.floor(y / canvas_r * r); // we need to scale ny to the r scale
+          if (y &lt; canvas_r) { ny = r - ny; }  // if we&apos;re still on the picture invert it 
+                                              // (the picture is upsidedown relative to y direction)
+        } else { ny = h - y; }
+      
+
+        let pixelindex = (y * canvas.width + x) * 4;
+        imagedata.data[pixelindex+0] = 0;
+        imagedata.data[pixelindex+1] = 0;
+        imagedata.data[pixelindex+2] = 0;
+        imagedata.data[pixelindex+3] = 255;
+        if (ny &lt; r &amp;&amp; nx &lt; c) {
+          if (env.useFilter1){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[0][ny][nx],0)*f1color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[0][ny][nx],0)*f1color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[0][ny][nx],0)*f1color[2]);
+          }
+          if (env.useFilter2){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[1][ny][nx],1)*f2color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[1][ny][nx],1)*f2color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[1][ny][nx],1)*f2color[2]);
+          }
+          if (env.useFilter3){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[2][ny][nx],2)*f3color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[2][ny][nx],2)*f3color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[2][ny][nx],2)*f3color[2]);
+          }
+          if (env.useFilter4){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[3][ny][nx],3)*f4color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[3][ny][nx],3)*f4color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[3][ny][nx],3)*f4color[2]);
+          }
+          if (env.useFilter5){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[4][ny][nx],4)*f5color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[4][ny][nx],4)*f5color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[4][ny][nx],4)*f5color[2]);
+        }
+          if (env.useFilter6){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[5][ny][nx],5)*f6color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[5][ny][nx],5)*f6color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[5][ny][nx],5)*f6color[2]);
+        }
+      }
+    }
+  }
+  context.putImageData(imagedata, 0, 0);
+}
+
+
+window.addEventListener(&apos;resize&apos;, function(event){
+  sizeCanvas();
+  draw();
+});
+
+
+this.dependOn.filter0 = () =&gt; {
+  prepareHistogram(0);
+}
+this.dependOn.filter1 = () =&gt; {
+  prepareHistogram(1);
+}
+this.dependOn.filter2 = () =&gt; {
+  prepareHistogram(2);
+}
+this.dependOn.filter3 = () =&gt; {
+  prepareHistogram(3);
+}
+this.dependOn.filter4 = () =&gt; {
+  prepareHistogram(4);
+}
+this.dependOn.filter5 = () =&gt; {
+  prepareHistogram(5);
+}
+this.dependOn.color1 = () =&gt; {
+  // const color = buildColor(env.color1);
+  // smartdown.set(&apos;c1&apos;, color);
+  draw()
+}
+this.dependOn.color2 = () =&gt; {
+  // const color = buildColor(env.color2);
+  // smartdown.set(&apos;c2&apos;, color);
+  draw()
+}
+this.dependOn.color3 = () =&gt; {
+  // const color = buildColor(env.color3);
+  // smartdown.set(&apos;c3&apos;, color);
+  draw()
+}
+this.dependOn.color4 = () =&gt; {
+  // const color = buildColor(env.color4);
+  // smartdown.set(&apos;c4&apos;, color);
+  draw()
+}
+this.dependOn.color5 = () =&gt; {
+  // const color = buildColor(env.color5);
+  // smartdown.set(&apos;c5&apos;, color);
+  draw()
+}
+this.dependOn.color6 = () =&gt; {
+  // const color = buildColor(env.color6);
+  // smartdown.set(&apos;c6&apos;, color);
+  draw()
+}
+this.dependOn.jpg = () =&gt; {
+  if (env.jpg &gt; 0){
+    let x = window.open();
+    const p = x.document.createElement(&apos;p&apos;);
+    let img = new Image();
+    img.src = canvas.toDataURL(&apos;image/jpg&apos;);
+    x.document.body.appendChild(img);
+  }
+}
+this.dependOn.useFilter1 = draw;
+this.dependOn.useFilter2 = draw;
+this.dependOn.useFilter3 = draw;
+this.dependOn.useFilter4 = draw;
+this.dependOn.useFilter5 = draw;
+this.dependOn.useFilter6 = draw;
+
+
+async function getImageData(filenameBase) {
+  return getImageDataFromFITS(filenameBase);
+}
+
+smartdown.showDisclosure(&apos;loading&apos;, &apos;&apos;, &apos;center,lightbox&apos;);
+dataArrays.push(await getImageData(&apos;../../assets/data/jw02731-o001_t017_nircam_clear-f090w_i2d_match&apos;));
+smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1);
+dataArrays.push(await getImageData(&apos;../../assets/data/jw02731-o001_t017_nircam_clear-f187n_i2d_match&apos;));
+smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1);
+dataArrays.push(await getImageData(&apos;../../assets/data/jw02731-o001_t017_nircam_clear-f200w_i2d_match&apos;));
+smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1);
+dataArrays.push(await getImageData(&apos;../../assets/data/jw02731-o001_t017_nircam_clear-f335m_i2d_match&apos;));
+smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1);
+dataArrays.push(await getImageData(&apos;../../assets/data/jw02731-o001_t017_nircam_clear-f444w_i2d_match&apos;));
+smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1);
+dataArrays.push(await getImageData(&apos;../../assets/data/jw02731-o001_t017_nircam_f444w-f470n_i2d_match&apos;));
+smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1);
+smartdown.hideDisclosure(&apos;loading&apos;, &apos;&apos;, &apos;&apos;);
+
+
+r = dataArrays[0].length;
+c = 0;
+if (r &gt; 0) { c = dataArrays[0][0].length; }
+console.log(r, c);
+
+
+draw();
+```
+# :::: filterSettings
+# --aliceblue
+active filter: [](:!setFilter) [redraw histogram](:=redrawHistogram=redrawHistogram+1) [Save and Close](:=close=close+1)
+min [](:?min|number) max [](:?max|number)
+stretch function: [](:?curveFunction) [formatting tips](::formatting)
+
+# :::: formatting
+Enter a single variable function using variable `x`.  Functions need to be written in javascript.  
+| Expression  | Javascript |
+| ----------- | ----------- |
+| $\ln(x)$          | `Math.log(x)`       |
+| $x^5$                | `Math.exp(x,5)`      |
+| $\text{asinh}(x)$  | `Math.asinh(x)`    |
+You can find a list of javascript **Math** functions [here](https://www.w3schools.com/jsref/jsref_obj_math.asp).
+# ::::
+
+# --aliceblue
+
+```javascript /plotly/autoplay
+this.div.style.width = &apos;100%&apos;;
+this.div.style.height = &apos;100%&apos;;
+this.div.style.margin = &apos;auto&apos;;
+
+
+smartdown.setVariable(&apos;redrawHistogram&apos;, 0);
+smartdown.setVariable(&apos;close&apos;, 0);
+
+this.dependOn.redrawHistogram = () =&gt; {
+  if (window.saveFilterVariables) {
+    window.saveFilterVariables();
+    window.drawHistogram();
+  }
+}
+
+
+this.dependOn.close = () =&gt; {
+  if (window.saveFilterVariables) {
+    window.saveFilterVariables()
+    smartdown.hideDisclosure(&apos;filterSettings&apos;, &apos;&apos;,  &apos;&apos;);
+  }
+}
+```
+# ::::</content><author><name>Isidore Mones</name></author><summary type="html">Transfer infrared light captured by the JWST into light from the visual spectrum to make a cool image. . . . . . . . . . . . . . . . . . . . . . . . # :::: intro # --outlinebox int ### Telescope Intro These are the cosmic cliffs of the [Carina Nebula](https://en.wikipedia.org/wiki/Carina_Nebula). This app displays telescope data from the [James Webb Space Telescope&apos;s](https://webb.nasa.gov/) NIRCam instrument. I&apos;ve downloaded the original [FITS](https://fits.gsfc.nasa.gov/fits_home.html) files from the [MAST archive](https://mast.stsci.edu/portal/Mashup/Clients/Mast/Portal.html). I used the [astropy](https://www.astropy.org/) and [reproject](https://reproject.readthedocs.io/en/stable/#) python libraries to reduce the size of some of the FITS files so they can be downloaded to your browser more quickly. You can see the scripts I used [here](https://github.com/izzymones/fits-file-processing). This page reads FITS files directly so what you are seeing is the actual data from the telescope, not a jpeg or some other image format. You can change the color assignments for each filter. I also display a histogram for each filter data. You can choose the minimum and maximum data values and choose a stretch function if you want. Play around and see what you can make. [Notes](/pages/telescopeNotes). # --outlinebox # :::: # :::: filters ![](../../assets/images/NIRCam_filters_modules.png) # :::: # :::: loading This page is reading telescope files. [](:!numLoaded) / 6 files loaded. It&apos;s worth the wait! # :::: # :::: panel # --outlinebox p [](:!c1|markdown)F090W [](:XuseFilter1) [](:-color1/0/5/0.1)[:gear:](:=filter0=filter0+1) [](:!c2|markdown)F187N [](:XuseFilter2) [](:-color2/0/5/0.1)[:gear:](:=filter1=filter1+1) [](:!c3|markdown)F200W [](:XuseFilter3) [](:-color3/0/5/0.1)[:gear:](:=filter2=filter2+1) [](:!c4|markdown)F335M [](:XuseFilter4) [](:-color4/0/5/0.1)[:gear:](:=filter3=filter3+1) [](:!c5|markdown)F444W [](:XuseFilter5) [](:-color5/0/5/0.1)[:gear:](:=filter4=filter4+1) [](:!c6|markdown)F470N [](:XuseFilter6) [](:-color6/0/5/0.1)[:gear:](:=filter5=filter5+1) [Notes](::intro/button,transparent,topleft,closeable,draggable) [Filters](::filters/button,transparent,bottomleft,closeable,draggable) [jpg](:=jpg=jpg+1) # --outlinebox # :::: ```javascript /autoplay/kiosk smartdown.importCssCode( ` .reducedfont { font-size: 16px; } `); const controlPanel = document.getElementById(&apos;panel&apos;); controlPanel.classList.add(&apos;reducedfont&apos;); //smartdown.import=../../assets/libs/fits.js let dataNames = [&apos;f090w&apos;, &apos;f187n&apos;, &apos;f200w&apos;, &apos;f335m&apos;, &apos;f444w&apos;, &apos;f470n&apos;]; let min = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]; let max = [8.0, 85.0, 60.0, 40.0, 15.0, 75.0]; let stretchFunction = [&apos;x&apos;, &apos;x&apos;, &apos;x&apos;, &apos;x&apos;, &apos;x&apos;, &apos;x&apos;]; let actualStretchFunction = []; for (let i = 0; i `; let canvas = document.getElementById(&quot;appCanvas&quot;); let context = canvas.getContext(&quot;2d&quot;); canvas.width = window.innerWidth; canvas.height = window.innerHeight; function sizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; } sizeCanvas(); function drawHistogram() { if (dataArrays.length == 0){return;} let div = document.getElementById(&apos;div_playable_2&apos;); let data2d = dataArrays[activeFilter]; let histData = []; let f = new Function(&apos;x&apos;, &apos;return &apos; + env.curveFunction + &apos;;&apos;); let min = env.min; let max = env.max; for (let r = 0; r = min &amp;&amp; value = 0){ answer[0] = 1 - number; answer[2] = 1; } if (number 1){ answer[1] = number - 1; answer[2] = 1; } if (number 2){ answer[2] = 3 - number; answer[1] = 1; } if (number 3){ answer[0] = number - 3; answer[1] = 1; } if (number 4){ answer[1] = 5 - number; answer[0] = 1; } if (number 5){ answer[2] = number - 5; answer[0] = 1; } return answer } function getValue(value, i) { let c = 0; let newvalue = actualStretchFunction[i](value); let newmax = max[i]; let newmin = min[i]; if (newvalue &gt; newmax) c = 255; else { if (newvalue &gt; newmin) { c = (Math.round((newvalue - newmin) / (newmax - newmin) * 255)); } } return c; } function activeFunctions() { let f = 0; if (env.useFilter1) {f++;} if (env.useFilter2) {f++;} if (env.useFilter3) {f++;} if (env.useFilter4) {f++;} if (env.useFilter5) {f++;} if (env.useFilter6) {f++;} return f; } function prepareHistogram(filter) { if (dataArrays.length == 0){return;} activeFilter = filter; updateFilterVariables(); drawHistogram(); smartdown.showDisclosure(&apos;filterSettings&apos;, &apos;&apos;, &apos;center,closeable,lightbox&apos;); } function buildColorString(r, g, b) { const rpadded = r.toString(16).padStart(2, &apos;0&apos;); const gpadded = g.toString(16).padStart(2, &apos;0&apos;); const bpadded = b.toString(16).padStart(2, &apos;0&apos;); return `#${rpadded}${gpadded}${bpadded}`; } function buildColor(n) { let rgb = spectrumProcess(n); for(let i = 0; i { prepareHistogram(0); } this.dependOn.filter1 = () =&gt; { prepareHistogram(1); } this.dependOn.filter2 = () =&gt; { prepareHistogram(2); } this.dependOn.filter3 = () =&gt; { prepareHistogram(3); } this.dependOn.filter4 = () =&gt; { prepareHistogram(4); } this.dependOn.filter5 = () =&gt; { prepareHistogram(5); } this.dependOn.color1 = () =&gt; { // const color = buildColor(env.color1); // smartdown.set(&apos;c1&apos;, color); draw() } this.dependOn.color2 = () =&gt; { // const color = buildColor(env.color2); // smartdown.set(&apos;c2&apos;, color); draw() } this.dependOn.color3 = () =&gt; { // const color = buildColor(env.color3); // smartdown.set(&apos;c3&apos;, color); draw() } this.dependOn.color4 = () =&gt; { // const color = buildColor(env.color4); // smartdown.set(&apos;c4&apos;, color); draw() } this.dependOn.color5 = () =&gt; { // const color = buildColor(env.color5); // smartdown.set(&apos;c5&apos;, color); draw() } this.dependOn.color6 = () =&gt; { // const color = buildColor(env.color6); // smartdown.set(&apos;c6&apos;, color); draw() } this.dependOn.jpg = () =&gt; { if (env.jpg &gt; 0){ let x = window.open(); const p = x.document.createElement(&apos;p&apos;); let img = new Image(); img.src = canvas.toDataURL(&apos;image/jpg&apos;); x.document.body.appendChild(img); } } this.dependOn.useFilter1 = draw; this.dependOn.useFilter2 = draw; this.dependOn.useFilter3 = draw; this.dependOn.useFilter4 = draw; this.dependOn.useFilter5 = draw; this.dependOn.useFilter6 = draw; async function getImageData(filenameBase) { return getImageDataFromFITS(filenameBase); } smartdown.showDisclosure(&apos;loading&apos;, &apos;&apos;, &apos;center,lightbox&apos;); dataArrays.push(await getImageData(&apos;../../assets/data/jw02731-o001_t017_nircam_clear-f090w_i2d_match&apos;)); smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1); dataArrays.push(await getImageData(&apos;../../assets/data/jw02731-o001_t017_nircam_clear-f187n_i2d_match&apos;)); smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1); dataArrays.push(await getImageData(&apos;../../assets/data/jw02731-o001_t017_nircam_clear-f200w_i2d_match&apos;)); smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1); dataArrays.push(await getImageData(&apos;../../assets/data/jw02731-o001_t017_nircam_clear-f335m_i2d_match&apos;)); smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1); dataArrays.push(await getImageData(&apos;../../assets/data/jw02731-o001_t017_nircam_clear-f444w_i2d_match&apos;)); smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1); dataArrays.push(await getImageData(&apos;../../assets/data/jw02731-o001_t017_nircam_f444w-f470n_i2d_match&apos;)); smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1); smartdown.hideDisclosure(&apos;loading&apos;, &apos;&apos;, &apos;&apos;); r = dataArrays[0].length; c = 0; if (r &gt; 0) { c = dataArrays[0][0].length; } console.log(r, c); draw(); ``` # :::: filterSettings # --aliceblue active filter: [](:!setFilter) [redraw histogram](:=redrawHistogram=redrawHistogram+1) [Save and Close](:=close=close+1) min [](:?min|number) max [](:?max|number) stretch function: [](:?curveFunction) [formatting tips](::formatting) # :::: formatting Enter a single variable function using variable `x`. Functions need to be written in javascript. | Expression | Javascript | | ----------- | ----------- | | $\ln(x)$ | `Math.log(x)` | | $x^5$ | `Math.exp(x,5)` | | $\text{asinh}(x)$ | `Math.asinh(x)` | You can find a list of javascript **Math** functions [here](https://www.w3schools.com/jsref/jsref_obj_math.asp). # :::: # --aliceblue ```javascript /plotly/autoplay this.div.style.width = &apos;100%&apos;; this.div.style.height = &apos;100%&apos;; this.div.style.margin = &apos;auto&apos;; smartdown.setVariable(&apos;redrawHistogram&apos;, 0); smartdown.setVariable(&apos;close&apos;, 0); this.dependOn.redrawHistogram = () =&gt; { if (window.saveFilterVariables) { window.saveFilterVariables(); window.drawHistogram(); } } this.dependOn.close = () =&gt; { if (window.saveFilterVariables) { window.saveFilterVariables() smartdown.hideDisclosure(&apos;filterSettings&apos;, &apos;&apos;, &apos;&apos;); } } ``` # ::::</summary></entry><entry><title type="html">Southern Ring Nebula</title><link href="https://izzymones.github.io/blog-kit/posts/southernringnebula/" rel="alternate" type="text/html" title="Southern Ring Nebula" /><published>2022-11-08T00:00:00-08:00</published><updated>2022-11-08T00:00:00-08:00</updated><id>https://izzymones.github.io/blog-kit/posts/southernringnebula</id><content type="html" xml:base="https://izzymones.github.io/blog-kit/posts/southernringnebula/">Transfer infrared light captured by the JWST into light from the visual spectrum to make a cool image.
+
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+
+# :::: intro
+# --outlinebox int
+### Telescope Intro
+This is the [Southern Ring Nebula](https://en.wikipedia.org/wiki/NGC_3132). It has been constructed with javascript on this website with data directly from the [James Webb Space Telescope&apos;s](https://webb.nasa.gov/) NIRCam instrument. I found the data available for free on [MAST observations](https://mast.stsci.edu/portal/Mashup/Clients/Mast/Portal.html). You can change the color assignments for each filter as well as the stretch function. Play around and see what you can make.
+[Notes](/pages/telescopeNotes).
+# --outlinebox
+# ::::
+
+# :::: filters
+![](../../assets/images/NIRCam_filters_modules.png)
+# ::::
+
+# :::: loading
+This page is reading telescope files. [](:!numLoaded) / 6 files loaded. It&apos;s worth the wait!
+# ::::
+
+
+# :::: panel
+# --outlinebox p
+[](:!c1|markdown)F090W [](:XuseFilter1) [](:-color1/0/5/0.1)[:gear:](:=filter0=filter0+1)
+[](:!c2|markdown)F187N [](:XuseFilter2) [](:-color2/0/5/0.1)[:gear:](:=filter1=filter1+1)
+[](:!c3|markdown)F212N [](:XuseFilter3) [](:-color3/0/5/0.1)[:gear:](:=filter2=filter2+1)
+[](:!c4|markdown)F356W [](:XuseFilter4) [](:-color4/0/5/0.1)[:gear:](:=filter3=filter3+1)
+[](:!c5|markdown)F405N [](:XuseFilter5) [](:-color5/0/5/0.1)[:gear:](:=filter4=filter4+1)
+[](:!c6|markdown)F470N [](:XuseFilter6) [](:-color6/0/5/0.1)[:gear:](:=filter5=filter5+1)
+[Notes](::intro/button,transparent,topleft,closeable,draggable) [Filters](::filters/button,transparent,bottomleft,closeable,draggable) [jpg](:=jpg=jpg+1)
+# --outlinebox
+# ::::
+
+
+```javascript /autoplay/kiosk
+smartdown.importCssCode(
+`
+.reducedfont {
+  font-size: 16px;
+}
+`);
+
+const controlPanel = document.getElementById(&apos;panel&apos;);
+controlPanel.classList.add(&apos;reducedfont&apos;);
+
+
+
+//smartdown.import=../../assets/libs/fits.js
+let dataNames = [&apos;f090w&apos;, &apos;f187n&apos;, &apos;f200w&apos;, &apos;f335m&apos;, &apos;f444w&apos;, &apos;f470n&apos;];
+let min = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
+let max = [15.0, 75.0, 85.0, 35.0, 65.0, 50.0];
+let stretchFunction = [&apos;x&apos;, &apos;x&apos;, &apos;x&apos;, &apos;x&apos;, &apos;x&apos;, &apos;x&apos;];
+let actualStretchFunction = [];
+
+for (let i = 0; i &lt; 6; i++){
+  actualStretchFunction.push(new Function(&apos;x&apos;, &apos;return &apos; + stretchFunction[i] + &apos;;&apos;));
+}
+
+let activeFilter = 0;
+let dataArrays = [];
+smartdown.showDisclosure(&apos;intro&apos;, &apos;&apos;, &apos;transparent,topleft,closeable,draggable,shadow,outline&apos;);
+smartdown.showDisclosure(&apos;panel&apos;, &apos;&apos;, &apos;transparent,bottomright,draggable,shadow,outline&apos;);
+smartdown.setVariable(&apos;useFilter1&apos;, true);
+smartdown.setVariable(&apos;useFilter2&apos;, true);
+smartdown.setVariable(&apos;useFilter3&apos;, true);
+smartdown.setVariable(&apos;useFilter4&apos;, true);
+smartdown.setVariable(&apos;useFilter5&apos;, true);
+smartdown.setVariable(&apos;useFilter6&apos;, true);
+smartdown.setVariable(&apos;jpg&apos;, 0);
+smartdown.setVariable(&apos;color1&apos;, 1);
+smartdown.setVariable(&apos;color2&apos;, 2);
+smartdown.setVariable(&apos;color3&apos;, 3);
+smartdown.setVariable(&apos;color4&apos;, 4);
+smartdown.setVariable(&apos;color5&apos;, 5);
+smartdown.setVariable(&apos;color6&apos;, 5);
+smartdown.setVariable(&apos;setFilter&apos;, dataNames[activeFilter]);
+smartdown.setVariable(&apos;curveFunction&apos;, stretchFunction[activeFilter]);
+smartdown.setVariable(&apos;min&apos;, min[activeFilter]);
+smartdown.setVariable(&apos;max&apos;, max[activeFilter]);
+smartdown.setVariable(&apos;filter0&apos;, 0);
+smartdown.setVariable(&apos;filter1&apos;, 0);
+smartdown.setVariable(&apos;filter2&apos;, 0);
+smartdown.setVariable(&apos;filter3&apos;, 0);
+smartdown.setVariable(&apos;filter4&apos;, 0);
+smartdown.setVariable(&apos;filter5&apos;, 0);
+smartdown.setVariable(&apos;numLoaded&apos;, 0)
+
+
+
+
+this.div.style.width = &apos;100%&apos;;
+this.div.style.height = &apos;100%&apos;;
+this.div.style.margin = &apos;auto&apos;;
+this.div.innerHTML = `&lt;canvas id=&quot;appCanvas&quot;&gt;&lt;/canvas&gt;`;
+let canvas = document.getElementById(&quot;appCanvas&quot;); 
+let context = canvas.getContext(&quot;2d&quot;);
+canvas.width  = window.innerWidth;
+canvas.height = window.innerHeight;
+
+
+function sizeCanvas() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+sizeCanvas();
+
+
+function drawHistogram() {
+  if (dataArrays.length == 0){return;}
+  let div = document.getElementById(&apos;div_playable_2&apos;);
+  let data2d = dataArrays[activeFilter];
+  let histData = [];
+  let f = new Function(&apos;x&apos;, &apos;return &apos; + env.curveFunction + &apos;;&apos;);
+  let min = env.min;
+  let max = env.max;
+  for (let r = 0; r &lt; data2d.length; r++) {
+    for (let c = 0; c &lt; data2d[0].length; c++) {
+      let value = f(data2d[r][c]);
+      if (value &gt;= min &amp;&amp; value &lt;= max) { 
+        histData.push(value);
+      }
+    }
+  }
+  let trace = {
+    x: histData,
+    type: &apos;histogram&apos;,
+    name: &apos;Telescope Data&apos;
+  };
+  let data = [trace];
+  Plotly.newPlot(div, data);
+}
+
+
+function updateFilterVariables() {
+  smartdown.setVariable(&apos;setFilter&apos;, dataNames[activeFilter]);
+  smartdown.setVariable(&apos;curveFunction&apos;, stretchFunction[activeFilter]);
+  smartdown.setVariable(&apos;min&apos;, min[activeFilter]);
+  smartdown.setVariable(&apos;max&apos;, max[activeFilter]);
+}
+
+
+function saveFilterVariables() {
+  stretchFunction[activeFilter] = env.curveFunction;
+  actualStretchFunction[activeFilter] = new Function(&apos;x&apos;, &apos;return &apos; + stretchFunction[activeFilter] + &apos;;&apos;);
+  min[activeFilter] = env.min;
+  max[activeFilter] = env.max;
+  draw();
+}
+
+
+window.saveFilterVariables = saveFilterVariables;
+window.drawHistogram = drawHistogram
+
+
+function spectrumProcess(number){
+  let answer = [0, 0, 0];
+  if (number &lt;= 1 &amp;&amp; number &gt;= 0){
+    answer[0] = 1 - number;
+    answer[2] = 1;
+  }
+  if (number &lt;= 2 &amp;&amp; number &gt; 1){
+    answer[1] = number - 1;
+    answer[2] = 1;
+  }
+  if (number &lt;= 3 &amp;&amp; number &gt; 2){
+    answer[2] = 3 - number;
+    answer[1] = 1;
+  }
+  if (number &lt;= 4 &amp;&amp; number &gt; 3){
+    answer[0] = number - 3;
+    answer[1] = 1;
+  }
+  if (number &lt;= 5 &amp;&amp; number &gt; 4){
+    answer[1] = 5 - number;
+    answer[0] = 1;
+  }
+  if (number &lt;= 6 &amp;&amp; number &gt; 5){
+    answer[2] = number - 5;
+    answer[0] = 1;
+  }
+  return answer
+}
+
+
+function getValue(value, i) {
+    let c = 0;
+  let newvalue = actualStretchFunction[i](value);
+  let newmax = max[i];
+  let newmin = min[i];
+    if (newvalue &gt; newmax) c = 255;
+    else {
+        if (newvalue &gt; newmin) {
+            c = (Math.round((newvalue - newmin) / (newmax - newmin) * 255));
+        }
+    }
+    return c;
+}
+
+
+function activeFunctions() {
+  let f = 0;
+  if (env.useFilter1) {f++;}
+  if (env.useFilter2) {f++;}
+  if (env.useFilter3) {f++;}
+  if (env.useFilter4) {f++;}
+  if (env.useFilter5) {f++;}
+  if (env.useFilter6) {f++;}
+  return f;
+}
+
+
+function prepareHistogram(filter) {
+  if (dataArrays.length == 0){return;}
+  activeFilter = filter;
+  updateFilterVariables();
+  drawHistogram();
+  smartdown.showDisclosure(&apos;filterSettings&apos;, &apos;&apos;, &apos;center,closeable,lightbox&apos;);
+} 
+
+
+function buildColorString(r, g, b) {
+  const rpadded = r.toString(16).padStart(2, &apos;0&apos;);
+  const gpadded = g.toString(16).padStart(2, &apos;0&apos;);
+  const bpadded = b.toString(16).padStart(2, &apos;0&apos;);
+  return `#${rpadded}${gpadded}${bpadded}`;
+}
+
+function buildColor(n) {
+  let rgb = spectrumProcess(n);
+  for(let i = 0; i &lt; rgb.length; i++) { rgb[i] = Math.floor(rgb[i] * 255); }
+    const colorName = buildColorString(rgb[0],rgb[1],rgb[2]);
+  return `![swatch](${colorName})`;
+}
+
+
+let r;
+let c;
+function draw() {
+  let f1color = spectrumProcess(env.color1);
+  let f2color = spectrumProcess(env.color2);
+  let f3color = spectrumProcess(env.color3);
+  let f4color = spectrumProcess(env.color4);
+  let f5color = spectrumProcess(env.color5);
+  let f6color = spectrumProcess(env.color6);
+  let imagedata = context.createImageData(canvas.width, canvas.height);
+  let w = canvas.width;
+  let h = canvas.height;
+  let canvas_r = w &lt; c ? Math.floor(r * w / c) : r;
+  let yshift = canvas_r &gt; h ? Math.floor((canvas_r-h)/2): 0; 
+
+  for (let y=0; y&lt;canvas.height; y++) {
+      for (let x=0; x&lt;canvas.width; x++) {
+        let nx = w &lt; c ? Math.floor((x / w) * c) : x; 
+        let ny = 0;
+        if (canvas_r &lt; r) { 
+          ny =  Math.floor(y / canvas_r * r); // we need to scale ny to the r scale
+          let scaledYshift = Math.floor(yshift / canvas_r * r);
+          if (y &lt; canvas_r) { ny = r - ny; }  // if we&apos;re still on the picture invert it 
+                                              // (the picture is upsidedown relative to y direction)
+          ny -= scaledYshift;
+
+        } else { ny = h - y;}  // this doesn&apos;t manage the yshift yet
+
+        let pixelindex = (y * w + x) * 4;
+        imagedata.data[pixelindex+0] = 0;
+        imagedata.data[pixelindex+1] = 0;
+        imagedata.data[pixelindex+2] = 0;
+        imagedata.data[pixelindex+3] = 255;
+        if (ny &lt; r &amp;&amp; nx &lt; c) {
+          if (env.useFilter1){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[0][ny][nx],0)*f1color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[0][ny][nx],0)*f1color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[0][ny][nx],0)*f1color[2]);
+          }
+          if (env.useFilter2){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[1][ny][nx],1)*f2color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[1][ny][nx],1)*f2color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[1][ny][nx],1)*f2color[2]);
+          }
+          if (env.useFilter3){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[2][ny][nx],2)*f3color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[2][ny][nx],2)*f3color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[2][ny][nx],2)*f3color[2]);
+          }
+          if (env.useFilter4){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[3][ny][nx],3)*f4color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[3][ny][nx],3)*f4color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[3][ny][nx],3)*f4color[2]);
+          }
+          if (env.useFilter5){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[4][ny][nx],4)*f5color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[4][ny][nx],4)*f5color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[4][ny][nx],4)*f5color[2]);
+        }
+          if (env.useFilter6){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[5][ny][nx],5)*f6color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[5][ny][nx],5)*f6color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[5][ny][nx],5)*f6color[2]);
+        }
+      }
+    }
+  }
+  context.putImageData(imagedata, 0, 0);
+}
+
+
+window.addEventListener(&apos;resize&apos;, function(event){
+  sizeCanvas();
+  draw();
+});
+
+
+this.dependOn.filter0 = () =&gt; {
+  prepareHistogram(0);
+}
+this.dependOn.filter1 = () =&gt; {
+  prepareHistogram(1);
+}
+this.dependOn.filter2 = () =&gt; {
+  prepareHistogram(2);
+}
+this.dependOn.filter3 = () =&gt; {
+  prepareHistogram(3);
+}
+this.dependOn.filter4 = () =&gt; {
+  prepareHistogram(4);
+}
+this.dependOn.filter5 = () =&gt; {
+  prepareHistogram(5);
+}
+this.dependOn.color1 = () =&gt; {
+  // const color = buildColor(env.color1);
+  // smartdown.set(&apos;c1&apos;, color);
+  draw()
+}
+this.dependOn.color2 = () =&gt; {
+  // const color = buildColor(env.color2);
+  // smartdown.set(&apos;c2&apos;, color);
+  draw()
+}
+this.dependOn.color3 = () =&gt; {
+  // const color = buildColor(env.color3);
+  // smartdown.set(&apos;c3&apos;, color);
+  draw()
+}
+this.dependOn.color4 = () =&gt; {
+  // const color = buildColor(env.color4);
+  // smartdown.set(&apos;c4&apos;, color);
+  draw()
+}
+this.dependOn.color5 = () =&gt; {
+  // const color = buildColor(env.color5);
+  // smartdown.set(&apos;c5&apos;, color);
+  draw()
+}
+this.dependOn.color6 = () =&gt; {
+  // const color = buildColor(env.color6);
+  // smartdown.set(&apos;c6&apos;, color);
+  draw()
+}
+this.dependOn.jpg = () =&gt; {
+  if (env.jpg &gt; 0){
+    let x = window.open();
+    const p = x.document.createElement(&apos;p&apos;);
+    let img = new Image();
+    img.src = canvas.toDataURL(&apos;image/jpg&apos;);
+    x.document.body.appendChild(img);
+  }
+}
+this.dependOn.useFilter1 = draw;
+this.dependOn.useFilter2 = draw;
+this.dependOn.useFilter3 = draw;
+this.dependOn.useFilter4 = draw;
+this.dependOn.useFilter5 = draw;
+this.dependOn.useFilter6 = draw;
+
+
+async function getImageData(filenameBase) {
+  return getImageDataFromFITS(filenameBase);
+}
+
+smartdown.showDisclosure(&apos;loading&apos;, &apos;&apos;, &apos;center,lightbox&apos;);
+dataArrays.push(await getImageData(&apos;../../assets/data/jw02733-o001_t001_nircam_clear-f090w_i2d_match&apos;));
+smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1);
+dataArrays.push(await getImageData(&apos;../../assets/data/jw02733-o001_t001_nircam_clear-f187n_i2d_match&apos;));
+smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1);
+dataArrays.push(await getImageData(&apos;../../assets/data/jw02733-o001_t001_nircam_clear-f212n_i2d_match&apos;));
+smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1);
+dataArrays.push(await getImageData(&apos;../../assets/data/jw02733-o001_t001_nircam_clear-f356w_i2d_match&apos;));
+smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1);
+dataArrays.push(await getImageData(&apos;../../assets/data/jw02733-o001_t001_nircam_f405n-f444w_i2d_match&apos;));
+smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1);
+dataArrays.push(await getImageData(&apos;../../assets/data/jw02733-o001_t001_nircam_f444w-f470n_i2d_match&apos;));
+smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1);
+smartdown.hideDisclosure(&apos;loading&apos;, &apos;&apos;, &apos;&apos;);
+
+
+r = dataArrays[0].length;
+c = 0;
+if (r &gt; 0) { c = dataArrays[0][0].length; }
+console.log(r, c);
+
+
+draw();
+```
+# :::: filterSettings
+# --aliceblue
+active filter: [](:!setFilter) [redraw histogram](:=redrawHistogram=redrawHistogram+1) [Save and Close](:=close=close+1)
+min [](:?min|number) max [](:?max|number)
+stretch function: [](:?curveFunction) [formatting tips](::formatting)
+
+# :::: formatting
+Enter a single variable function using variable `x`.  Functions need to be written in javascript.  
+| Expression  | Javascript |
+| ----------- | ----------- |
+| $\ln(x)$          | `Math.log(x)`       |
+| $x^5$                | `Math.exp(x,5)`      |
+| $\text{asinh}(x)$  | `Math.asinh(x)`    |
+You can find a list of javascript **Math** functions [here](https://www.w3schools.com/jsref/jsref_obj_math.asp).
+# ::::
+
+# --aliceblue
+
+```javascript /plotly/autoplay
+this.div.style.width = &apos;100%&apos;;
+this.div.style.height = &apos;100%&apos;;
+this.div.style.margin = &apos;auto&apos;;
+
+
+smartdown.setVariable(&apos;redrawHistogram&apos;, 0);
+smartdown.setVariable(&apos;close&apos;, 0);
+
+this.dependOn.redrawHistogram = () =&gt; {
+  if (window.saveFilterVariables) {
+    window.saveFilterVariables();
+    window.drawHistogram();
+  }
+}
+
+
+this.dependOn.close = () =&gt; {
+  if (window.saveFilterVariables) {
+    window.saveFilterVariables()
+    smartdown.hideDisclosure(&apos;filterSettings&apos;, &apos;&apos;,  &apos;&apos;);
+  }
+}
+```
+# ::::</content><author><name>Isidore Mones</name></author><summary type="html">Transfer infrared light captured by the JWST into light from the visual spectrum to make a cool image. . . . . . . . . . . . . . . . . . . . . . . . # :::: intro # --outlinebox int ### Telescope Intro This is the [Southern Ring Nebula](https://en.wikipedia.org/wiki/NGC_3132). It has been constructed with javascript on this website with data directly from the [James Webb Space Telescope&apos;s](https://webb.nasa.gov/) NIRCam instrument. I found the data available for free on [MAST observations](https://mast.stsci.edu/portal/Mashup/Clients/Mast/Portal.html). You can change the color assignments for each filter as well as the stretch function. Play around and see what you can make. [Notes](/pages/telescopeNotes). # --outlinebox # :::: # :::: filters ![](../../assets/images/NIRCam_filters_modules.png) # :::: # :::: loading This page is reading telescope files. [](:!numLoaded) / 6 files loaded. It&apos;s worth the wait! # :::: # :::: panel # --outlinebox p [](:!c1|markdown)F090W [](:XuseFilter1) [](:-color1/0/5/0.1)[:gear:](:=filter0=filter0+1) [](:!c2|markdown)F187N [](:XuseFilter2) [](:-color2/0/5/0.1)[:gear:](:=filter1=filter1+1) [](:!c3|markdown)F212N [](:XuseFilter3) [](:-color3/0/5/0.1)[:gear:](:=filter2=filter2+1) [](:!c4|markdown)F356W [](:XuseFilter4) [](:-color4/0/5/0.1)[:gear:](:=filter3=filter3+1) [](:!c5|markdown)F405N [](:XuseFilter5) [](:-color5/0/5/0.1)[:gear:](:=filter4=filter4+1) [](:!c6|markdown)F470N [](:XuseFilter6) [](:-color6/0/5/0.1)[:gear:](:=filter5=filter5+1) [Notes](::intro/button,transparent,topleft,closeable,draggable) [Filters](::filters/button,transparent,bottomleft,closeable,draggable) [jpg](:=jpg=jpg+1) # --outlinebox # :::: ```javascript /autoplay/kiosk smartdown.importCssCode( ` .reducedfont { font-size: 16px; } `); const controlPanel = document.getElementById(&apos;panel&apos;); controlPanel.classList.add(&apos;reducedfont&apos;); //smartdown.import=../../assets/libs/fits.js let dataNames = [&apos;f090w&apos;, &apos;f187n&apos;, &apos;f200w&apos;, &apos;f335m&apos;, &apos;f444w&apos;, &apos;f470n&apos;]; let min = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]; let max = [15.0, 75.0, 85.0, 35.0, 65.0, 50.0]; let stretchFunction = [&apos;x&apos;, &apos;x&apos;, &apos;x&apos;, &apos;x&apos;, &apos;x&apos;, &apos;x&apos;]; let actualStretchFunction = []; for (let i = 0; i `; let canvas = document.getElementById(&quot;appCanvas&quot;); let context = canvas.getContext(&quot;2d&quot;); canvas.width = window.innerWidth; canvas.height = window.innerHeight; function sizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; } sizeCanvas(); function drawHistogram() { if (dataArrays.length == 0){return;} let div = document.getElementById(&apos;div_playable_2&apos;); let data2d = dataArrays[activeFilter]; let histData = []; let f = new Function(&apos;x&apos;, &apos;return &apos; + env.curveFunction + &apos;;&apos;); let min = env.min; let max = env.max; for (let r = 0; r = min &amp;&amp; value = 0){ answer[0] = 1 - number; answer[2] = 1; } if (number 1){ answer[1] = number - 1; answer[2] = 1; } if (number 2){ answer[2] = 3 - number; answer[1] = 1; } if (number 3){ answer[0] = number - 3; answer[1] = 1; } if (number 4){ answer[1] = 5 - number; answer[0] = 1; } if (number 5){ answer[2] = number - 5; answer[0] = 1; } return answer } function getValue(value, i) { let c = 0; let newvalue = actualStretchFunction[i](value); let newmax = max[i]; let newmin = min[i]; if (newvalue &gt; newmax) c = 255; else { if (newvalue &gt; newmin) { c = (Math.round((newvalue - newmin) / (newmax - newmin) * 255)); } } return c; } function activeFunctions() { let f = 0; if (env.useFilter1) {f++;} if (env.useFilter2) {f++;} if (env.useFilter3) {f++;} if (env.useFilter4) {f++;} if (env.useFilter5) {f++;} if (env.useFilter6) {f++;} return f; } function prepareHistogram(filter) { if (dataArrays.length == 0){return;} activeFilter = filter; updateFilterVariables(); drawHistogram(); smartdown.showDisclosure(&apos;filterSettings&apos;, &apos;&apos;, &apos;center,closeable,lightbox&apos;); } function buildColorString(r, g, b) { const rpadded = r.toString(16).padStart(2, &apos;0&apos;); const gpadded = g.toString(16).padStart(2, &apos;0&apos;); const bpadded = b.toString(16).padStart(2, &apos;0&apos;); return `#${rpadded}${gpadded}${bpadded}`; } function buildColor(n) { let rgb = spectrumProcess(n); for(let i = 0; i h ? Math.floor((canvas_r-h)/2): 0; for (let y=0; y { prepareHistogram(0); } this.dependOn.filter1 = () =&gt; { prepareHistogram(1); } this.dependOn.filter2 = () =&gt; { prepareHistogram(2); } this.dependOn.filter3 = () =&gt; { prepareHistogram(3); } this.dependOn.filter4 = () =&gt; { prepareHistogram(4); } this.dependOn.filter5 = () =&gt; { prepareHistogram(5); } this.dependOn.color1 = () =&gt; { // const color = buildColor(env.color1); // smartdown.set(&apos;c1&apos;, color); draw() } this.dependOn.color2 = () =&gt; { // const color = buildColor(env.color2); // smartdown.set(&apos;c2&apos;, color); draw() } this.dependOn.color3 = () =&gt; { // const color = buildColor(env.color3); // smartdown.set(&apos;c3&apos;, color); draw() } this.dependOn.color4 = () =&gt; { // const color = buildColor(env.color4); // smartdown.set(&apos;c4&apos;, color); draw() } this.dependOn.color5 = () =&gt; { // const color = buildColor(env.color5); // smartdown.set(&apos;c5&apos;, color); draw() } this.dependOn.color6 = () =&gt; { // const color = buildColor(env.color6); // smartdown.set(&apos;c6&apos;, color); draw() } this.dependOn.jpg = () =&gt; { if (env.jpg &gt; 0){ let x = window.open(); const p = x.document.createElement(&apos;p&apos;); let img = new Image(); img.src = canvas.toDataURL(&apos;image/jpg&apos;); x.document.body.appendChild(img); } } this.dependOn.useFilter1 = draw; this.dependOn.useFilter2 = draw; this.dependOn.useFilter3 = draw; this.dependOn.useFilter4 = draw; this.dependOn.useFilter5 = draw; this.dependOn.useFilter6 = draw; async function getImageData(filenameBase) { return getImageDataFromFITS(filenameBase); } smartdown.showDisclosure(&apos;loading&apos;, &apos;&apos;, &apos;center,lightbox&apos;); dataArrays.push(await getImageData(&apos;../../assets/data/jw02733-o001_t001_nircam_clear-f090w_i2d_match&apos;)); smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1); dataArrays.push(await getImageData(&apos;../../assets/data/jw02733-o001_t001_nircam_clear-f187n_i2d_match&apos;)); smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1); dataArrays.push(await getImageData(&apos;../../assets/data/jw02733-o001_t001_nircam_clear-f212n_i2d_match&apos;)); smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1); dataArrays.push(await getImageData(&apos;../../assets/data/jw02733-o001_t001_nircam_clear-f356w_i2d_match&apos;)); smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1); dataArrays.push(await getImageData(&apos;../../assets/data/jw02733-o001_t001_nircam_f405n-f444w_i2d_match&apos;)); smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1); dataArrays.push(await getImageData(&apos;../../assets/data/jw02733-o001_t001_nircam_f444w-f470n_i2d_match&apos;)); smartdown.setVariable(&apos;numLoaded&apos;,env.numLoaded + 1); smartdown.hideDisclosure(&apos;loading&apos;, &apos;&apos;, &apos;&apos;); r = dataArrays[0].length; c = 0; if (r &gt; 0) { c = dataArrays[0][0].length; } console.log(r, c); draw(); ``` # :::: filterSettings # --aliceblue active filter: [](:!setFilter) [redraw histogram](:=redrawHistogram=redrawHistogram+1) [Save and Close](:=close=close+1) min [](:?min|number) max [](:?max|number) stretch function: [](:?curveFunction) [formatting tips](::formatting) # :::: formatting Enter a single variable function using variable `x`. Functions need to be written in javascript. | Expression | Javascript | | ----------- | ----------- | | $\ln(x)$ | `Math.log(x)` | | $x^5$ | `Math.exp(x,5)` | | $\text{asinh}(x)$ | `Math.asinh(x)` | You can find a list of javascript **Math** functions [here](https://www.w3schools.com/jsref/jsref_obj_math.asp). # :::: # --aliceblue ```javascript /plotly/autoplay this.div.style.width = &apos;100%&apos;; this.div.style.height = &apos;100%&apos;; this.div.style.margin = &apos;auto&apos;; smartdown.setVariable(&apos;redrawHistogram&apos;, 0); smartdown.setVariable(&apos;close&apos;, 0); this.dependOn.redrawHistogram = () =&gt; { if (window.saveFilterVariables) { window.saveFilterVariables(); window.drawHistogram(); } } this.dependOn.close = () =&gt; { if (window.saveFilterVariables) { window.saveFilterVariables() smartdown.hideDisclosure(&apos;filterSettings&apos;, &apos;&apos;, &apos;&apos;); } } ``` # ::::</summary></entry><entry><title type="html">Phantom Galaxy</title><link href="https://izzymones.github.io/blog-kit/posts/phantomgalaxy/" rel="alternate" type="text/html" title="Phantom Galaxy" /><published>2022-09-30T00:00:00-07:00</published><updated>2022-09-30T00:00:00-07:00</updated><id>https://izzymones.github.io/blog-kit/posts/phantomgalaxy</id><content type="html" xml:base="https://izzymones.github.io/blog-kit/posts/phantomgalaxy/">Transfer infrared light captured by the JWST into light from the visual spectrum to make a cool image.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+# :::: intro
+# --outlinebox int
+### Telescope Intro
+This is [Messier 74](https://en.wikipedia.org/wiki/Messier_74) also known as the Phantom Galaxy. It has been constructed with javascript on this website with data directly from the [James Webb Space Telescope&apos;s](https://webb.nasa.gov/) MIRI instrument. You can change the color assignments for each filter as well as the stretch function. Play around and see what you can make.
+Check out [Notes](/pages/telescopeNotes) if you want to learn more about how I did this.
+# --outlinebox
+# ::::
+
+
+# :::: loading
+This page is reading telescope files.  It&apos;s approximately 100MB so it may take a minute depending on the speed of your connection.  It&apos;s worth the wait!
+# ::::
+
+
+# :::: filters
+![](../../assets/images/MIRI_IMAGING2.png)
+# ::::
+
+
+# :::: panel
+# --outlinebox p
+F770W [](:XuseF770W) [](:-color1/0/5/0.1)[show settings](:=filter0=true)
+F1000W [](:XuseF1000W) [](:-color2/0/5/0.1)[show settings](:=filter1=true)
+F1130W [](:XuseF1130W) [](:-color3/0/5/0.1)[show settings](:=filter2=true)
+F2100W [](:XuseF2100W) [](:-color4/0/5/0.1)[show settings](:=filter3=true)
+[Redraw](:=redraw=true) [Filters](::filters/button,transparent,bottomleft,closeable,draggable) 
+
+
+# --outlinebox
+# ::::
+
+
+```javascript /autoplay/kiosk
+//smartdown.import=../../assets/libs/fits.js
+
+
+let dataNames = [&apos;f770w&apos;, &apos;f1000w&apos;, &apos;f1130w&apos;, &apos;f2100w&apos;];
+
+let min = [10.0, 28.0, 42.0, 245.0];
+let max = [25.0, 36.0, 65.0, 260.0];
+
+
+let stretchFunction = [&apos;x&apos;, &apos;x&apos;, &apos;x&apos;, &apos;x&apos;];
+let actualStretchFunction = [];
+for (let i = 0; i &lt; 4; i++){
+  actualStretchFunction.push(new Function(&apos;x&apos;, &apos;return &apos; + stretchFunction[i] + &apos;;&apos;));
+}
+let activeFilter = 0;
+let dataArrays = [];
+smartdown.showDisclosure(&apos;panel&apos;,&apos;&apos;,&apos;transparent,bottomright,draggable,shadow,outline&apos;);
+smartdown.showDisclosure(&apos;intro&apos;,&apos;&apos;,&apos;transparent,topleft,closeable,draggable,shadow,outline&apos;);
+smartdown.setVariable(&apos;useF770W&apos;, true);
+smartdown.setVariable(&apos;useF1000W&apos;, true);
+smartdown.setVariable(&apos;useF1130W&apos;, false);
+smartdown.setVariable(&apos;useF2100W&apos;, false);
+smartdown.setVariable(&apos;redraw&apos;,false);
+smartdown.setVariable(&apos;download&apos;, false);
+smartdown.setVariable(&apos;color1&apos;, 1);
+smartdown.setVariable(&apos;color2&apos;, 3);
+smartdown.setVariable(&apos;color3&apos;, 5);
+smartdown.setVariable(&apos;color4&apos;, 0);
+smartdown.setVariable(&apos;setFilter&apos;, dataNames[activeFilter]);
+smartdown.setVariable(&apos;curveFunction&apos;, stretchFunction[activeFilter]);
+smartdown.setVariable(&apos;min&apos;, min[activeFilter]);
+smartdown.setVariable(&apos;max&apos;, max[activeFilter]);
+smartdown.setVariable(&apos;saveSettings&apos;, false);
+smartdown.setVariable(&apos;drawHistogram&apos;, false);
+smartdown.setVariable(&apos;filter0&apos;, &apos;false&apos;);
+smartdown.setVariable(&apos;filter1&apos;, &apos;false&apos;);
+smartdown.setVariable(&apos;filter2&apos;, &apos;false&apos;);
+smartdown.setVariable(&apos;filter3&apos;, &apos;false&apos;);
+
+
+async function getImageData(filenameBase) {
+  return getImageDataFromFITS(filenameBase);
+}
+
+
+smartdown.showDisclosure(&apos;loading&apos;,&apos;&apos;,&apos;center,lightbox&apos;);
+dataArrays.push(await getImageData(&apos;../../assets/data/jw02107-o039_t018_miri_f770w_i2d_sci&apos;));
+dataArrays.push(await getImageData(&apos;../../assets/data/jw02107-o039_t018_miri_f1000w_i2d_sci&apos;));
+dataArrays.push(await getImageData(&apos;../../assets/data/jw02107-o039_t018_miri_f1130w_i2d_sci&apos;));
+dataArrays.push(await getImageData(&apos;../../assets/data/jw02107-o039_t018_miri_f2100w_i2d_sci&apos;));
+smartdown.hideDisclosure(&apos;loading&apos;,&apos;&apos;,&apos;&apos;);
+    
+
+this.div.style.width = &apos;100%&apos;;
+this.div.style.height = &apos;100%&apos;;
+this.div.style.margin = &apos;auto&apos;;
+this.div.innerHTML = `&lt;canvas id=&quot;appCanvas&quot;&gt;&lt;/canvas&gt;`
+let canvas = document.getElementById(&quot;appCanvas&quot;); 
+let context = canvas.getContext(&quot;2d&quot;);
+canvas.width  = window.innerWidth;
+canvas.height = window.innerHeight;
+
+
+function sizeCanvas() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+sizeCanvas();
+
+
+function drawHistogram() {
+  let div = document.getElementById(&apos;div_playable_2&apos;)
+  let data2d = dataArrays[activeFilter];
+  let histData = [];
+  let f = new Function(&apos;x&apos;, &apos;return &apos; + env.curveFunction + &apos;;&apos;);
+  let min = env.min;
+  let max = env.max;
+  for (let r=0; r &lt; data2d.length; r++) {
+    for (let c=0; c &lt; data2d[0].length; c++) {
+      let value = f(data2d[r][c]);
+      if (value &gt;= min &amp;&amp; value &lt;= max) { 
+        histData.push(value);
+      }
+    }
+  }
+  let trace = {
+    x: histData,
+    type: &apos;histogram&apos;,
+    name: &apos;Telescope Data&apos;
+  };
+  let data = [trace];
+  Plotly.newPlot(div, data);
+}
+
+
+function updateFilterVariables() {
+  smartdown.setVariable(&apos;setFilter&apos;, dataNames[activeFilter]);
+  smartdown.setVariable(&apos;curveFunction&apos;, stretchFunction[activeFilter]);
+  smartdown.setVariable(&apos;min&apos;, min[activeFilter]);
+  smartdown.setVariable(&apos;max&apos;, max[activeFilter]);
+}
+
+
+function saveFilterVariables() {
+  stretchFunction[activeFilter] = env.curveFunction;
+  actualStretchFunction[activeFilter] = new Function(&apos;x&apos;, &apos;return &apos; + stretchFunction[activeFilter] + &apos;;&apos;);
+  min[activeFilter] = env.min;
+  max[activeFilter] = env.max;
+}
+
+
+function spectrumProcess(number){
+  let answer = [0,0,0]
+  if (number &lt;= 1 &amp;&amp; number &gt;= 0){
+    answer[0] = 1 - number
+    answer[2] = 1
+  }
+  if (number &lt;= 2 &amp;&amp; number &gt; 1){
+    answer[1] = number - 1
+    answer[2] = 1
+  }
+  if (number &lt;= 3 &amp;&amp; number &gt; 2){
+    answer[2] = 3 - number
+    answer[1] = 1
+  }
+  if (number &lt;= 4 &amp;&amp; number &gt; 3){
+    answer[0] = number - 3
+    answer[1] = 1
+  }
+  if (number &lt;= 5 &amp;&amp; number &gt; 4){
+    answer[1] = 5 - number
+    answer[0] = 1
+  }
+  if (number &lt;= 6 &amp;&amp; number &gt; 5){
+    answer[2] = number-5
+    answer[0] = 1
+  }
+  return answer
+}
+
+
+function getValue(value, i) {
+    let c = 0;
+  let newvalue = actualStretchFunction[i](value);
+  let newmax = max[i];
+  let newmin = min[i];
+    if (newvalue &gt; newmax) c = 255;
+    else {
+        if (newvalue &gt; newmin) {
+            c = (Math.round((newvalue - newmin) / (newmax - newmin) * 255));
+        }
+    }
+    return c;
+}
+
+
+function activeFunctions() {
+  let f = 0;
+  if (env.useF770W) {f++; }
+  if (env.useF1000W) {f++;}
+  if (env.useF1130W) {f++;}
+  if (env.useF2100W) {f++;}
+  return f;
+}
+
+// assume all the arrays have same dimensions
+// we should put a check in for this
+let r = dataArrays[0].length;
+let c = 0;
+if (r &gt; 0) { c = dataArrays[0][0].length; }
+console.log(r, c);
+
+function draw() {
+  let f1color = spectrumProcess(env.color1);
+  let f2color = spectrumProcess(env.color2);
+  let f3color = spectrumProcess(env.color3);
+  let f4color = spectrumProcess(env.color4);
+  let imagedata = context.createImageData(canvas.width, canvas.height);
+  let w = canvas.width;
+  let h = canvas.height;
+  for (let y=0; y&lt;canvas.height; y++) {
+      for (let x=0; x&lt;canvas.width; x++) {
+
+        // changing this code to fit the image to the viewer&apos;s screen
+        // we just scale the pixel position the same position in the 
+        // data array and round to the nearest integer to get an array index
+        // It&apos;s sort of like sampling due to some round off error
+        let ydown = h - y;
+        let ny = h &lt; r ? Math.floor(ydown / h * r) : ydown;
+        let nx = w &lt; c ? Math.floor((x / canvas.width) * c) : x; 
+
+        let pixelindex = (y * canvas.width + x) * 4;
+        imagedata.data[pixelindex+0] = 0;
+        imagedata.data[pixelindex+1] = 0;
+        imagedata.data[pixelindex+2] = 0;
+        imagedata.data[pixelindex+3] = 255;
+        if (ny &lt; r &amp;&amp; nx &lt; c) {
+          if (env.useF770W){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[0][ny][nx],0)*f1color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[0][ny][nx],0)*f1color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[0][ny][nx],0)*f1color[2]);
+          }
+          if (env.useF1000W){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[1][ny][nx],1)*f2color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[1][ny][nx],1)*f2color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[1][ny][nx],1)*f2color[2]);
+          }
+          if (env.useF1130W){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[2][ny][nx],2)*f3color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[2][ny][nx],2)*f3color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[2][ny][nx],2)*f3color[2]);
+          }
+          if (env.useF2100W){
+            imagedata.data[pixelindex+0] += (getValue(dataArrays[3][ny][nx],3)*f4color[0]);
+            imagedata.data[pixelindex+1] += (getValue(dataArrays[3][ny][nx],3)*f4color[1]);
+            imagedata.data[pixelindex+2] += (getValue(dataArrays[3][ny][nx],3)*f4color[2]);
+        }
+      }
+    }
+  }
+  context.putImageData(imagedata,0,0);
+}
+
+
+window.addEventListener(&apos;resize&apos;, function(event){
+  sizeCanvas();
+  draw();
+});
+
+function exportImage() {
+  const imgData = canvas.toDataURL(&quot;image/jpg&quot;);
+  let iframe = &quot;&lt;iframe width=&apos;100%&apos; height=&apos;100%&apos; src=&apos;&quot; + imgData + &quot;&apos;&gt;&lt;/iframe&gt;&quot;
+  let x = window.open();
+  x.document.open();
+  x.document.write(iframe);
+  x.document.close();
+
+
+}
+
+
+this.dependOn = [&apos;download&apos;,&apos;filter0&apos;,&apos;filter1&apos;, &apos;filter2&apos;, &apos;filter3&apos;, &apos;saveSettings&apos;,&apos;drawHistogram&apos;,&apos;redraw&apos;];
+this.depend = function() {
+
+  if (env.download == true) {
+    smartdown.setVariable(&apos;download&apos;, false);
+    exportImage();
+  }
+
+  // here&apos;s the repeated code that should be fixed
+  if (env.filter0 == true) {
+    smartdown.setVariable(&apos;filter0&apos;, false);
+    activeFilter = 0;
+    updateFilterVariables();
+    drawHistogram();
+    smartdown.showDisclosure(&apos;filterSettings&apos;,&apos;&apos;,&apos;center,closeable,lightbox&apos;);
+  }
+
+  if (env.filter1 == true) {
+    smartdown.setVariable(&apos;filter1&apos;, false);
+    activeFilter = 1;
+    updateFilterVariables();
+    drawHistogram();
+    smartdown.showDisclosure(&apos;filterSettings&apos;,&apos;&apos;,&apos;center,closeable,lightbox&apos;);
+  }
+
+  if (env.filter2 == true) {
+    smartdown.setVariable(&apos;filter2&apos;, false);
+    activeFilter = 2;
+    updateFilterVariables();
+    drawHistogram();
+    smartdown.showDisclosure(&apos;filterSettings&apos;,&apos;&apos;,&apos;center,closeable,lightbox&apos;);
+  }
+
+  if (env.filter3 == true) {
+    smartdown.setVariable(&apos;filter3&apos;, false);
+    activeFilter = 3;
+    updateFilterVariables();
+    drawHistogram();
+    smartdown.showDisclosure(&apos;filterSettings&apos;,&apos;&apos;,&apos;center,closeable,lightbox&apos;);
+  }
+
+  // these events are triggered by the histogram popup
+  if (env.saveSettings == true) {
+    smartdown.setVariable(&apos;saveSettings&apos;, false);
+    saveFilterVariables();  
+  }
+
+  if (env.drawHistogram == true) {
+    smartdown.setVariable(&apos;drawHistogram&apos;, false);
+    drawHistogram();  
+  }
+  if (env.redraw == true){
+    smartdown.setVariable(&apos;redraw&apos;,false);
+    draw();
+  }
+}
+
+
+draw()
+
+
+
+```
+# :::: filterSettings
+# --aliceblue
+active filter: [](:!setFilter) [redraw histogram](:=redrawHistogram=true) [Save and Close](:=close=true)
+min [](:?min|number) max [](:?max|number)
+stretch function: [](:?curveFunction) [formatting tips](::formatting)
+# :::: formatting
+Enter a single variable function using variable `x`.  Functions need to be written in javascript.  
+| Expression  | Javascript |
+| ----------- | ----------- |
+| $\ln(x)$          | `Math.log(x)`       |
+| $x^5$                | `Math.exp(x,5)`      |
+| $\text{asinh}(x)$  | `Math.asinh(x)`    |
+You can find a list of javascript **Math** functions [here](https://www.w3schools.com/jsref/jsref_obj_math.asp).
+# ::::
+# --aliceblue
+
+```javascript /plotly/autoplay
+
+this.div.style.width = &apos;100%&apos;;
+this.div.style.height = &apos;100%&apos;;
+this.div.style.margin = &apos;auto&apos;;
+
+
+smartdown.setVariable(&apos;redrawHistogram&apos;, false);
+smartdown.setVariable(&apos;close&apos;, false);
+
+
+this.dependOn = [&apos;redrawHistogram&apos;,&apos;close&apos;];
+this.depend = function() {
+  if (env.redrawHistogram == true) {
+    smartdown.setVariable(&apos;redrawHistogram&apos;, false);
+    smartdown.setVariable(&apos;saveSettings&apos;, true);
+    smartdown.setVariable(&apos;drawHistogram&apos;, true);
+  }
+  if (env.close == true) {
+    smartdown.setVariable(&apos;close&apos;, false);
+    smartdown.setVariable(&apos;saveSettings&apos;, true);
+    smartdown.hideDisclosure(&apos;filterSettings&apos;,&apos;&apos;,&apos;&apos;);
+  }
+}
+
+```
+# ::::</content><author><name>Isidore Mones</name></author><summary type="html">Transfer infrared light captured by the JWST into light from the visual spectrum to make a cool image. . . . . . . . . . . . . . . . . . . . . . # :::: intro # --outlinebox int ### Telescope Intro This is [Messier 74](https://en.wikipedia.org/wiki/Messier_74) also known as the Phantom Galaxy. It has been constructed with javascript on this website with data directly from the [James Webb Space Telescope&apos;s](https://webb.nasa.gov/) MIRI instrument. You can change the color assignments for each filter as well as the stretch function. Play around and see what you can make. Check out [Notes](/pages/telescopeNotes) if you want to learn more about how I did this. # --outlinebox # :::: # :::: loading This page is reading telescope files. It&apos;s approximately 100MB so it may take a minute depending on the speed of your connection. It&apos;s worth the wait! # :::: # :::: filters ![](../../assets/images/MIRI_IMAGING2.png) # :::: # :::: panel # --outlinebox p F770W [](:XuseF770W) [](:-color1/0/5/0.1)[show settings](:=filter0=true) F1000W [](:XuseF1000W) [](:-color2/0/5/0.1)[show settings](:=filter1=true) F1130W [](:XuseF1130W) [](:-color3/0/5/0.1)[show settings](:=filter2=true) F2100W [](:XuseF2100W) [](:-color4/0/5/0.1)[show settings](:=filter3=true) [Redraw](:=redraw=true) [Filters](::filters/button,transparent,bottomleft,closeable,draggable) # --outlinebox # :::: ```javascript /autoplay/kiosk //smartdown.import=../../assets/libs/fits.js let dataNames = [&apos;f770w&apos;, &apos;f1000w&apos;, &apos;f1130w&apos;, &apos;f2100w&apos;]; let min = [10.0, 28.0, 42.0, 245.0]; let max = [25.0, 36.0, 65.0, 260.0]; let stretchFunction = [&apos;x&apos;, &apos;x&apos;, &apos;x&apos;, &apos;x&apos;]; let actualStretchFunction = []; for (let i = 0; i ` let canvas = document.getElementById(&quot;appCanvas&quot;); let context = canvas.getContext(&quot;2d&quot;); canvas.width = window.innerWidth; canvas.height = window.innerHeight; function sizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; } sizeCanvas(); function drawHistogram() { let div = document.getElementById(&apos;div_playable_2&apos;) let data2d = dataArrays[activeFilter]; let histData = []; let f = new Function(&apos;x&apos;, &apos;return &apos; + env.curveFunction + &apos;;&apos;); let min = env.min; let max = env.max; for (let r=0; r = min &amp;&amp; value = 0){ answer[0] = 1 - number answer[2] = 1 } if (number 1){ answer[1] = number - 1 answer[2] = 1 } if (number 2){ answer[2] = 3 - number answer[1] = 1 } if (number 3){ answer[0] = number - 3 answer[1] = 1 } if (number 4){ answer[1] = 5 - number answer[0] = 1 } if (number 5){ answer[2] = number-5 answer[0] = 1 } return answer } function getValue(value, i) { let c = 0; let newvalue = actualStretchFunction[i](value); let newmax = max[i]; let newmin = min[i]; if (newvalue &gt; newmax) c = 255; else { if (newvalue &gt; newmin) { c = (Math.round((newvalue - newmin) / (newmax - newmin) * 255)); } } return c; } function activeFunctions() { let f = 0; if (env.useF770W) {f++; } if (env.useF1000W) {f++;} if (env.useF1130W) {f++;} if (env.useF2100W) {f++;} return f; } // assume all the arrays have same dimensions // we should put a check in for this let r = dataArrays[0].length; let c = 0; if (r &gt; 0) { c = dataArrays[0][0].length; } console.log(r, c); function draw() { let f1color = spectrumProcess(env.color1); let f2color = spectrumProcess(env.color2); let f3color = spectrumProcess(env.color3); let f4color = spectrumProcess(env.color4); let imagedata = context.createImageData(canvas.width, canvas.height); let w = canvas.width; let h = canvas.height; for (let y=0; y&quot; let x = window.open(); x.document.open(); x.document.write(iframe); x.document.close(); } this.dependOn = [&apos;download&apos;,&apos;filter0&apos;,&apos;filter1&apos;, &apos;filter2&apos;, &apos;filter3&apos;, &apos;saveSettings&apos;,&apos;drawHistogram&apos;,&apos;redraw&apos;]; this.depend = function() { if (env.download == true) { smartdown.setVariable(&apos;download&apos;, false); exportImage(); } // here&apos;s the repeated code that should be fixed if (env.filter0 == true) { smartdown.setVariable(&apos;filter0&apos;, false); activeFilter = 0; updateFilterVariables(); drawHistogram(); smartdown.showDisclosure(&apos;filterSettings&apos;,&apos;&apos;,&apos;center,closeable,lightbox&apos;); } if (env.filter1 == true) { smartdown.setVariable(&apos;filter1&apos;, false); activeFilter = 1; updateFilterVariables(); drawHistogram(); smartdown.showDisclosure(&apos;filterSettings&apos;,&apos;&apos;,&apos;center,closeable,lightbox&apos;); } if (env.filter2 == true) { smartdown.setVariable(&apos;filter2&apos;, false); activeFilter = 2; updateFilterVariables(); drawHistogram(); smartdown.showDisclosure(&apos;filterSettings&apos;,&apos;&apos;,&apos;center,closeable,lightbox&apos;); } if (env.filter3 == true) { smartdown.setVariable(&apos;filter3&apos;, false); activeFilter = 3; updateFilterVariables(); drawHistogram(); smartdown.showDisclosure(&apos;filterSettings&apos;,&apos;&apos;,&apos;center,closeable,lightbox&apos;); } // these events are triggered by the histogram popup if (env.saveSettings == true) { smartdown.setVariable(&apos;saveSettings&apos;, false); saveFilterVariables(); } if (env.drawHistogram == true) { smartdown.setVariable(&apos;drawHistogram&apos;, false); drawHistogram(); } if (env.redraw == true){ smartdown.setVariable(&apos;redraw&apos;,false); draw(); } } draw() ``` # :::: filterSettings # --aliceblue active filter: [](:!setFilter) [redraw histogram](:=redrawHistogram=true) [Save and Close](:=close=true) min [](:?min|number) max [](:?max|number) stretch function: [](:?curveFunction) [formatting tips](::formatting) # :::: formatting Enter a single variable function using variable `x`. Functions need to be written in javascript. | Expression | Javascript | | ----------- | ----------- | | $\ln(x)$ | `Math.log(x)` | | $x^5$ | `Math.exp(x,5)` | | $\text{asinh}(x)$ | `Math.asinh(x)` | You can find a list of javascript **Math** functions [here](https://www.w3schools.com/jsref/jsref_obj_math.asp). # :::: # --aliceblue ```javascript /plotly/autoplay this.div.style.width = &apos;100%&apos;; this.div.style.height = &apos;100%&apos;; this.div.style.margin = &apos;auto&apos;; smartdown.setVariable(&apos;redrawHistogram&apos;, false); smartdown.setVariable(&apos;close&apos;, false); this.dependOn = [&apos;redrawHistogram&apos;,&apos;close&apos;]; this.depend = function() { if (env.redrawHistogram == true) { smartdown.setVariable(&apos;redrawHistogram&apos;, false); smartdown.setVariable(&apos;saveSettings&apos;, true); smartdown.setVariable(&apos;drawHistogram&apos;, true); } if (env.close == true) { smartdown.setVariable(&apos;close&apos;, false); smartdown.setVariable(&apos;saveSettings&apos;, true); smartdown.hideDisclosure(&apos;filterSettings&apos;,&apos;&apos;,&apos;&apos;); } } ``` # ::::</summary></entry><entry><title type="html">Solar System</title><link href="https://izzymones.github.io/blog-kit/posts/system/" rel="alternate" type="text/html" title="Solar System" /><published>2022-09-05T00:00:00-07:00</published><updated>2022-09-05T00:00:00-07:00</updated><id>https://izzymones.github.io/blog-kit/posts/system</id><content type="html" xml:base="https://izzymones.github.io/blog-kit/posts/system/">If you are having trouble seeing the planets, do not be alarmed. This is an (almost) to scale representation so the planets and the sun are all too small to see. Change the scaling to make the planets more visible and less realistic.
+This is my first attempt at simulating the orbits of the planets in our solar system. This uses my code from my two body problem and uses it to move our eight planets around the Sun. To see how these orbits work check out my two body problem simulation.
+**Earth Year Length** [](:?speed|number) seconds [](:-speed/1/10/1)
+
+**Planet Scale** [](:?scale|number) [](:-scale/1/10000/1)
+
+**Sun Scale** [](:?sunscale|number) [](:-sunscale/1/10000/1)
+
+[Start](:=start=true)
+
+
+
+```javascript /p5js/autoplay
+let widthPercent = 0.8;  // what percentage of the page width should the app get
+let heightPercent = 0.7; // what percentage of the page height should the app get
+let s;
+let planets = []; 
+
+// conversion factors
+// standard units are kilograms, meters and seconds
+// we need to convert to half sols, pixels and frames
+smartdown.setVariable(&apos;speed&apos;,4); 
+smartdown.setVariable(&apos;scale&apos;,1); 
+smartdown.setVariable(&apos;sunscale&apos;,1); 
+let framerate = 30;
+let kg_per_hs = 10 ** 30;
+let m_per_p = 10 ** 10;
+let old_speed = env.speed;
+let cur_speed = env.speed;
+let old_scale = env.scale;
+let cur_scale = env.scale;
+let old_sunscale = env.sunscale;
+let cur_sunscale = env.sunscale;
+let s_per_f = 31536000/(framerate * cur_speed);
+
+
+let G_reg_units = 6.67 * 10 ** (-11); // m^3/ (kg * s^2)
+let G = G_reg_units * kg_per_hs * (s_per_f ** 2) / (m_per_p ** 3);
+
+class Particle {
+    constructor(x, y, u, v, m, c, r) {
+        this.t = 0;
+        this.m = m;
+        this.pos = p5.createVector(x, y);
+        this.vel = p5.createVector(u, v);
+        this.history = [];
+        this.c = c;
+        this.r = r;
+
+    }
+
+    applyForce(force) {
+        let accel = p5.createVector(force.x/this.m, force.y/this.m);
+        // we can just add the accel to the velocity
+        // applied over one time step it&apos;s the velocity
+        this.vel.add(accel);
+    }
+
+    update() {
+        this.history.push(this.pos);
+        this.t++;
+        this.pos.add(this.vel);
+
+    }
+  
+    render() {
+        p5.push()
+        p5.stroke(this.c);
+        p5.fill(this.c);
+        p5.circle(this.pos.x, this.pos.y, this.r);
+        p5.pop()
+    }
+} 
+
+
+
+class Star extends Particle {
+    constructor(x, y, u, v, m, c, r) {
+        super(x, y, u, v, m, c ,r);
+        this.m = m;
+    }
+  
+    attract(p) {
+        let d = p5.createVector(this.pos.x - p.pos.x,this.pos.y - p.pos.y);
+        let force = (G*this.m*p.m / d.magSq()); // F = - (GMm)/(r^2) 
+        d.normalize(); // make d a unit vector
+        d.mult(force); // give it magnitude F
+        return d;
+    }
+  
+    render() {
+        p5.push()
+        p5.stroke(this.c);
+        p5.fill(this.c);
+        p5.circle(this.pos.x, this.pos.y, this.r);
+        p5.pop()
+    }
+}
+
+let smass = 2 * 10 ** 30 / kg_per_hs; // mass of the sun converted to halfsols
+let srad = 696340000/(m_per_p)*cur_sunscale;
+
+let mercury_m = 3.285 * 10 ** (23) / kg_per_hs; // mass of mercury converted to halfsols
+let mercury_d = 69 * 10 ** 9 / m_per_p;
+let mercury_v =((G*smass)/mercury_d)**(1/2); //pixels/frame
+let mercury_c = [150,150,150];
+let mercury_r = 2440000/(m_per_p)*cur_scale;
+
+let venus_m = 4.867 * 10 ** (24) / kg_per_hs; // mass of earth converted to halfsols
+let venus_d = 107.5 * 10 ** 9 / m_per_p;
+let venus_v =((G*smass)/venus_d)**(1/2); //pixels/frame
+let venus_c = [225,225,170];
+let venus_r = 6052000/(m_per_p)*cur_scale;
+
+let earth_m = 6 * 10 ** (24) / kg_per_hs; // mass of earth converted to halfsols
+let earth_d = 150 * 10 ** 9 / m_per_p;
+let earth_v =((G*smass)/earth_d)**(1/2); //pixels/frame
+let earth_c = [100,150,200];
+let earth_r = 6371000/(m_per_p)*cur_scale;
+
+let mars_m = 6.39 * 10 ** (23) / kg_per_hs; // mass of earth converted to halfsols
+let mars_d = 213 * 10 ** 9 / m_per_p;
+let mars_v =((G*smass)/mars_d)**(1/2); //pixels/frame
+let mars_c = [255,100,75];
+let mars_r = 3390000/(m_per_p)*cur_scale;
+
+let jupiter_m = 1.898 * 10 ** (27) / kg_per_hs; // mass of earth converted to halfsols
+let jupiter_d = 742 * 10 ** 9 / m_per_p;
+let jupiter_v =((G*smass)/jupiter_d)**(1/2); //pixels/frame
+let jupiter_c = [225,125,50];
+let jupiter_r = 69911000/(m_per_p)*cur_scale;
+
+let saturn_m = 5.683 * 10 ** (26) / kg_per_hs; // mass of earth converted to halfsols
+let saturn_d = 1473.8 * 10 ** 9 / m_per_p;
+let saturn_v =((G*smass)/saturn_d)**(1/2); //pixels/frame
+let saturn_c = [175,190,75];
+let saturn_r = 58232000/(m_per_p)*cur_scale;
+
+let uranus_m = 8.681 * 10 ** (25) / kg_per_hs; // mass of earth converted to halfsols
+let uranus_d = 2944.4 * 10 ** 9 / m_per_p;
+let uranus_v =((G*smass)/uranus_d)**(1/2); //pixels/frame
+let uranus_c = [225,245,250];
+let uranus_r = 25362000/(m_per_p)*cur_scale;
+
+let neptune_m = 1.024 * 10 ** (26) / kg_per_hs; // mass of earth converted to halfsols
+let neptune_d = 4474 * 10 ** 9 / m_per_p;
+let neptune_v =((G*smass)/neptune_d)**(1/2); //pixels/frame
+let neptune_c = [20,20,235];
+let neptune_r = 24622000/(m_per_p)*cur_scale;
+
+
+function updateSpeed(){
+    s_per_f = 31536000/(framerate * cur_speed);
+    G = G_reg_units * kg_per_hs * (s_per_f ** 2) / (m_per_p ** 3);
+    for (let i=0; i &lt; planets.length; i++) {
+        planets[i].vel.mult(old_speed/cur_speed);
+    }
+}
+
+function updateRadius(){
+    for (let i=0; i &lt; planets.length; i++) {
+        planets[i].r = (planets[i].r*cur_scale)/old_scale;
+    }
+}
+
+
+function starColor(mass) {
+    if (mass &lt; 12.5) {
+        return [255, Math.floor(255 * mass/12.5), 0];
+    }
+    if (mass &lt; 25) {
+        return [255,255, Math.floor(255*(mass-12.5)/12.5)];
+    } 
+    let value = Math.floor(255 * (25 - (mass - 25))/ 25);
+    return [value, value, 255];
+}
+
+
+
+
+p5.setup = function() {
+    p5.frameRate(framerate);
+    p5.createCanvas(widthPercent*window.innerWidth, heightPercent*window.innerHeight);
+    s = new Star(p5.width / 2, p5.height / 2, 0, 0, smass, [255,255,0], srad);
+    planets.push(new Particle((p5.width  / 2) + mercury_d, p5.height / 2, 0, mercury_v, mercury_m, mercury_c, mercury_r));
+    planets.push(new Particle((p5.width  / 2) + venus_d, p5.height / 2, 0, venus_v, venus_m, venus_c, venus_r));
+    planets.push(new Particle((p5.width  / 2) + earth_d, p5.height / 2, 0, earth_v, earth_m, earth_c, earth_r));
+    planets.push(new Particle((p5.width  / 2) + mars_d, p5.height / 2, 0, mars_v, mars_m, mars_c, mars_r));
+    planets.push(new Particle((p5.width  / 2) + jupiter_d, p5.height / 2, 0, jupiter_v, jupiter_m, jupiter_c, jupiter_r));
+    planets.push(new Particle((p5.width  / 2) + saturn_d, p5.height / 2, 0, saturn_v, saturn_m, saturn_c, saturn_r));
+    planets.push(new Particle((p5.width  / 2) + uranus_d, p5.height / 2, 0, uranus_v, uranus_m, uranus_c, uranus_r));
+    planets.push(new Particle((p5.width  / 2) + neptune_d, p5.height / 2, 0, neptune_v, neptune_m, neptune_c, neptune_r));
+    
+    s.render();
+
+    for (let i=0; i &lt; planets.length; i++) {
+        planets[i].render();
+    }
+}
+
+
+p5.draw = function() {
+    p5.background(50,0,50);
+    if (env.start) {
+        for (let i=0; i &lt; planets.length; i++) {
+            planets[i].applyForce(s.attract(planets[i]));
+        }
+
+        s.update();
+        for (let i=0; i &lt; planets.length; i++) {
+            planets[i].update();
+        }
+
+    }
+    s.render();
+    for (let i=0; i &lt; planets.length; i++) {
+        planets[i].render();
+    }
+}
+
+this.dependOn = [&apos;speed&apos;, &apos;scale&apos;, &apos;sunscale&apos;];
+this.depend = function() {
+    if (env.speed !== cur_speed) {
+        old_speed = cur_speed;
+        cur_speed = env.speed;
+        updateSpeed();
+    }
+    if (env.scale !== cur_scale) {
+        old_scale = cur_scale;
+        cur_scale = env.scale;
+        updateRadius();
+    }
+    if (env.sunscale !== cur_sunscale) {
+        old_sunscale = cur_sunscale;
+        cur_sunscale = env.sunscale;
+        s.r = (s.r*cur_sunscale)/old_sunscale;
+    }
+};
+
+```</content><author><name>Isidore Mones</name></author><summary type="html">If you are having trouble seeing the planets, do not be alarmed. This is an (almost) to scale representation so the planets and the sun are all too small to see. Change the scaling to make the planets more visible and less realistic. This is my first attempt at simulating the orbits of the planets in our solar system. This uses my code from my two body problem and uses it to move our eight planets around the Sun. To see how these orbits work check out my two body problem simulation. **Earth Year Length** [](:?speed|number) seconds [](:-speed/1/10/1) **Planet Scale** [](:?scale|number) [](:-scale/1/10000/1) **Sun Scale** [](:?sunscale|number) [](:-sunscale/1/10000/1) [Start](:=start=true) ```javascript /p5js/autoplay let widthPercent = 0.8; // what percentage of the page width should the app get let heightPercent = 0.7; // what percentage of the page height should the app get let s; let planets = []; // conversion factors // standard units are kilograms, meters and seconds // we need to convert to half sols, pixels and frames smartdown.setVariable(&apos;speed&apos;,4); smartdown.setVariable(&apos;scale&apos;,1); smartdown.setVariable(&apos;sunscale&apos;,1); let framerate = 30; let kg_per_hs = 10 ** 30; let m_per_p = 10 ** 10; let old_speed = env.speed; let cur_speed = env.speed; let old_scale = env.scale; let cur_scale = env.scale; let old_sunscale = env.sunscale; let cur_sunscale = env.sunscale; let s_per_f = 31536000/(framerate * cur_speed); let G_reg_units = 6.67 * 10 ** (-11); // m^3/ (kg * s^2) let G = G_reg_units * kg_per_hs * (s_per_f ** 2) / (m_per_p ** 3); class Particle { constructor(x, y, u, v, m, c, r) { this.t = 0; this.m = m; this.pos = p5.createVector(x, y); this.vel = p5.createVector(u, v); this.history = []; this.c = c; this.r = r; } applyForce(force) { let accel = p5.createVector(force.x/this.m, force.y/this.m); // we can just add the accel to the velocity // applied over one time step it&apos;s the velocity this.vel.add(accel); } update() { this.history.push(this.pos); this.t++; this.pos.add(this.vel); } render() { p5.push() p5.stroke(this.c); p5.fill(this.c); p5.circle(this.pos.x, this.pos.y, this.r); p5.pop() } } class Star extends Particle { constructor(x, y, u, v, m, c, r) { super(x, y, u, v, m, c ,r); this.m = m; } attract(p) { let d = p5.createVector(this.pos.x - p.pos.x,this.pos.y - p.pos.y); let force = (G*this.m*p.m / d.magSq()); // F = - (GMm)/(r^2) d.normalize(); // make d a unit vector d.mult(force); // give it magnitude F return d; } render() { p5.push() p5.stroke(this.c); p5.fill(this.c); p5.circle(this.pos.x, this.pos.y, this.r); p5.pop() } } let smass = 2 * 10 ** 30 / kg_per_hs; // mass of the sun converted to halfsols let srad = 696340000/(m_per_p)*cur_sunscale; let mercury_m = 3.285 * 10 ** (23) / kg_per_hs; // mass of mercury converted to halfsols let mercury_d = 69 * 10 ** 9 / m_per_p; let mercury_v =((G*smass)/mercury_d)**(1/2); //pixels/frame let mercury_c = [150,150,150]; let mercury_r = 2440000/(m_per_p)*cur_scale; let venus_m = 4.867 * 10 ** (24) / kg_per_hs; // mass of earth converted to halfsols let venus_d = 107.5 * 10 ** 9 / m_per_p; let venus_v =((G*smass)/venus_d)**(1/2); //pixels/frame let venus_c = [225,225,170]; let venus_r = 6052000/(m_per_p)*cur_scale; let earth_m = 6 * 10 ** (24) / kg_per_hs; // mass of earth converted to halfsols let earth_d = 150 * 10 ** 9 / m_per_p; let earth_v =((G*smass)/earth_d)**(1/2); //pixels/frame let earth_c = [100,150,200]; let earth_r = 6371000/(m_per_p)*cur_scale; let mars_m = 6.39 * 10 ** (23) / kg_per_hs; // mass of earth converted to halfsols let mars_d = 213 * 10 ** 9 / m_per_p; let mars_v =((G*smass)/mars_d)**(1/2); //pixels/frame let mars_c = [255,100,75]; let mars_r = 3390000/(m_per_p)*cur_scale; let jupiter_m = 1.898 * 10 ** (27) / kg_per_hs; // mass of earth converted to halfsols let jupiter_d = 742 * 10 ** 9 / m_per_p; let jupiter_v =((G*smass)/jupiter_d)**(1/2); //pixels/frame let jupiter_c = [225,125,50]; let jupiter_r = 69911000/(m_per_p)*cur_scale; let saturn_m = 5.683 * 10 ** (26) / kg_per_hs; // mass of earth converted to halfsols let saturn_d = 1473.8 * 10 ** 9 / m_per_p; let saturn_v =((G*smass)/saturn_d)**(1/2); //pixels/frame let saturn_c = [175,190,75]; let saturn_r = 58232000/(m_per_p)*cur_scale; let uranus_m = 8.681 * 10 ** (25) / kg_per_hs; // mass of earth converted to halfsols let uranus_d = 2944.4 * 10 ** 9 / m_per_p; let uranus_v =((G*smass)/uranus_d)**(1/2); //pixels/frame let uranus_c = [225,245,250]; let uranus_r = 25362000/(m_per_p)*cur_scale; let neptune_m = 1.024 * 10 ** (26) / kg_per_hs; // mass of earth converted to halfsols let neptune_d = 4474 * 10 ** 9 / m_per_p; let neptune_v =((G*smass)/neptune_d)**(1/2); //pixels/frame let neptune_c = [20,20,235]; let neptune_r = 24622000/(m_per_p)*cur_scale; function updateSpeed(){ s_per_f = 31536000/(framerate * cur_speed); G = G_reg_units * kg_per_hs * (s_per_f ** 2) / (m_per_p ** 3); for (let i=0; i &lt; planets.length; i++) { planets[i].vel.mult(old_speed/cur_speed); } } function updateRadius(){ for (let i=0; i &lt; planets.length; i++) { planets[i].r = (planets[i].r*cur_scale)/old_scale; } } function starColor(mass) { if (mass &lt; 12.5) { return [255, Math.floor(255 * mass/12.5), 0]; } if (mass &lt; 25) { return [255,255, Math.floor(255*(mass-12.5)/12.5)]; } let value = Math.floor(255 * (25 - (mass - 25))/ 25); return [value, value, 255]; } p5.setup = function() { p5.frameRate(framerate); p5.createCanvas(widthPercent*window.innerWidth, heightPercent*window.innerHeight); s = new Star(p5.width / 2, p5.height / 2, 0, 0, smass, [255,255,0], srad); planets.push(new Particle((p5.width / 2) + mercury_d, p5.height / 2, 0, mercury_v, mercury_m, mercury_c, mercury_r)); planets.push(new Particle((p5.width / 2) + venus_d, p5.height / 2, 0, venus_v, venus_m, venus_c, venus_r)); planets.push(new Particle((p5.width / 2) + earth_d, p5.height / 2, 0, earth_v, earth_m, earth_c, earth_r)); planets.push(new Particle((p5.width / 2) + mars_d, p5.height / 2, 0, mars_v, mars_m, mars_c, mars_r)); planets.push(new Particle((p5.width / 2) + jupiter_d, p5.height / 2, 0, jupiter_v, jupiter_m, jupiter_c, jupiter_r)); planets.push(new Particle((p5.width / 2) + saturn_d, p5.height / 2, 0, saturn_v, saturn_m, saturn_c, saturn_r)); planets.push(new Particle((p5.width / 2) + uranus_d, p5.height / 2, 0, uranus_v, uranus_m, uranus_c, uranus_r)); planets.push(new Particle((p5.width / 2) + neptune_d, p5.height / 2, 0, neptune_v, neptune_m, neptune_c, neptune_r)); s.render(); for (let i=0; i &lt; planets.length; i++) { planets[i].render(); } } p5.draw = function() { p5.background(50,0,50); if (env.start) { for (let i=0; i &lt; planets.length; i++) { planets[i].applyForce(s.attract(planets[i])); } s.update(); for (let i=0; i &lt; planets.length; i++) { planets[i].update(); } } s.render(); for (let i=0; i &lt; planets.length; i++) { planets[i].render(); } } this.dependOn = [&apos;speed&apos;, &apos;scale&apos;, &apos;sunscale&apos;]; this.depend = function() { if (env.speed !== cur_speed) { old_speed = cur_speed; cur_speed = env.speed; updateSpeed(); } if (env.scale !== cur_scale) { old_scale = cur_scale; cur_scale = env.scale; updateRadius(); } if (env.sunscale !== cur_sunscale) { old_sunscale = cur_sunscale; cur_sunscale = env.sunscale; s.r = (s.r*cur_sunscale)/old_sunscale; } }; ```</summary></entry><entry><title type="html">Two Body Problem</title><link href="https://izzymones.github.io/blog-kit/posts/twobody/" rel="alternate" type="text/html" title="Two Body Problem" /><published>2022-09-04T00:00:00-07:00</published><updated>2022-09-04T00:00:00-07:00</updated><id>https://izzymones.github.io/blog-kit/posts/twobody</id><content type="html" xml:base="https://izzymones.github.io/blog-kit/posts/twobody/">Mass is attracted to other mass through the force of gravity. This program simulates this by showing how two stars would move in a two dimensional space. This is done using the formula $F= \frac{Gm_1m_2}{r^2}$ where $F$ is the attractive force between the two objects, $r$ is the distance between the centers of mass of the objects, and $m_1$ and $m_2$ are the objects&apos; respective masses. This formula is used iteratively to change the velocity based on the other masses in the area. 
+It should be noted that the star that starts on the left has an upward starting velocity and the star that starts on the right has a downwards starting velocity. This makes them more likely to orbit instead of just colliding. 
+**Star Mass 1** [](:?mass1|number) [](:-mass1/1/50/1)
+
+**Star Mass 2** [](:?mass2|number) [](:-mass2/1/50/1)
+
+[Start](:=start=true) [Reset](:=reset=true)[Add Particle:](:Xparticle)
+
+```javascript /p5js/autoplay
+smartdown.setVariable(&apos;mass1&apos;,10);
+smartdown.setVariable(&apos;mass2&apos;,30);
+smartdown.setVariable(&apos;start&apos;,false);
+smartdown.setVariable(&apos;particle&apos;,false);
+let plocked = false;
+let s1locked = false;
+let s2locked = false;
+
+function starColor(mass) {
+    if (mass &lt; 12.5) {
+        return [255, Math.floor(255 * mass/12.5), 0];
+    }
+    if (mass &lt; 25) {
+        return [255,255, Math.floor(255*(mass-12.5)/12.5)];
+    } 
+    let value = Math.floor(255 * (25 - (mass - 25))/ 25);
+    return [value, value, 255];
+}
+
+class Particle {
+    constructor(x, y, u, v) {
+        this.t = 0;
+        this.m = 10;
+        this.pos = p5.createVector(x, y);
+        this.vel = p5.createVector(u, v);
+        this.history = [];
+    }
+
+    applyForce(force) {
+        this.vel.add(force);
+    }
+
+    update() {
+        this.history.push(this.pos);
+        this.t++;
+        this.pos.add(this.vel);
+    }
+  
+    render() {
+        p5.stroke(0);
+        p5.noFill();
+        p5.beginShape();
+        for (const v of this.history) {
+            p5.vertex(v.x, v.y);
+        }
+        p5.endShape();
+    
+        p5.fill(0);
+        p5.circle(this.pos.x, this.pos.y, 20);
+    }
+} 
+
+
+class Star extends Particle {
+    constructor(x, y, u, v, m) {
+        super(x, y, u, v);
+        this.m = m;
+    }
+  
+    attract(p) {
+        const force = p5.Vector.sub(this.pos, p.pos);
+        const magSq = force.magSq();
+        force.setMag(this.m * p.m / magSq);
+        return force;
+}
+  
+    render() {
+        p5.stroke(102);
+        p5.noFill();
+        p5.beginShape();
+        for (const v of this.history) {
+            p5.vertex(v.x, v.y);
+        }
+        p5.endShape();
+        p5.stroke(0);
+        p5.fill(starColor(this.m));
+        p5.circle(this.pos.x, this.pos.y, 40);
+    }
+}
+
+
+function reset(){
+    smartdown.setVariable(&apos;reset&apos;,false)
+    s1 = new Star((p5.width / 2)-60, p5.height / 2, 0, 1,env.mass1);
+    s2 = new Star((p5.width / 2)+60 , p5.height / 2, 0, -1,env.mass2);
+    p = new Particle((p5.width / 2), (p5.height / 2)+60, 0, 0);
+}
+
+
+p5.mousePressed = function() {
+    if (incircle(p)) {
+        plocked = true;
+    } 
+    if (incircle(s1)) {
+        s1locked = true;
+    }
+    if (incircle(s2)) {
+        s2locked = true;
+    }
+}
+
+
+p5.mouseReleased = function(){
+    plocked = false;
+    s1locked = false;
+    s2locked = false;
+}
+
+
+p5.mouseDragged = function() {
+    if (plocked) {
+        p.pos.x = p5.mouseX;
+        p.pos.y = p5.mouseY;
+    }
+    if (s1locked) {
+        s1.pos.x = p5.mouseX;
+        s1.pos.y = p5.mouseY;
+    }
+    if (s2locked) {
+        s2.pos.x = p5.mouseX;
+        s2.pos.y = p5.mouseY;
+    }
+}
+
+let widthPercent = 0.8;  // what percentage of the page width should the app get
+let heightPercent = 0.7; // what percentage of the page height should the app get
+
+p5.setup = function() {
+    p5.frameRate(30);
+    p5.createCanvas(widthPercent*window.innerWidth, heightPercent*window.innerHeight);
+    s1 = new Star((p5.width / 2)-60, p5.height / 2, 0, 1,env.mass1);
+    s2 = new Star((p5.width / 2)+60 , p5.height / 2, 0, -1,env.mass2);
+    p = new Particle((p5.width / 2) , (p5.height / 2)+60, 0, 0);
+    if (env.particle){
+        p = new Particle((p5.width / 2) , (p5.height / 2)+60, 0, 0);
+    }   
+    p5.noStroke();
+
+    }
+function incircle(circle) {
+    let deltaX = p5.mouseX - circle.pos.x;
+    let deltaY = p5.mouseY - circle.pos.y;
+    let distance = Math.sqrt(deltaX**2 + deltaY**2);
+    return distance &lt; 10;
+}
+p5.draw = function() {
+    p5.background(100,75,100);
+    p5.frameRate(30);
+    p5.fill(0)
+    s1 = new Star(s1.pos.x, s1.pos.y, s1.vel.x, s1.vel.y, env.mass1);
+    s2 = new Star(s2.pos.x, s2.pos.y, s2.vel.x, s2.vel.y, env.mass2);
+    if (env.particle){
+        p = new Particle(p.pos.x, p.pos.y, p.vel.x, p.vel.y);
+    } else{
+        p = new Particle((p5.width / 2) , (p5.height / 2)+60, 0, 0);
+    }
+
+    if (env.start == true) {
+        s1.applyForce(s2.attract(s1));
+        s2.applyForce(s1.attract(s2));
+        p.applyForce(s1.attract(p));
+        p.applyForce(s2.attract(p));
+        s1.update();
+        s1.render();
+        s2.update();
+        s2.render();
+        if (env.particle){
+            p.update();
+            p.render();
+        }
+        if (env.reset) {
+            reset()
+        }
+    }else{
+        s1.render();
+        s2.render();
+    }
+}
+```</content><author><name>Isidore Mones</name></author><summary type="html">Mass is attracted to other mass through the force of gravity. This program simulates this by showing how two stars would move in a two dimensional space. This is done using the formula $F= \frac{Gm_1m_2}{r^2}$ where $F$ is the attractive force between the two objects, $r$ is the distance between the centers of mass of the objects, and $m_1$ and $m_2$ are the objects&apos; respective masses. This formula is used iteratively to change the velocity based on the other masses in the area. It should be noted that the star that starts on the left has an upward starting velocity and the star that starts on the right has a downwards starting velocity. This makes them more likely to orbit instead of just colliding. **Star Mass 1** [](:?mass1|number) [](:-mass1/1/50/1) **Star Mass 2** [](:?mass2|number) [](:-mass2/1/50/1) [Start](:=start=true) [Reset](:=reset=true)[Add Particle:](:Xparticle) ```javascript /p5js/autoplay smartdown.setVariable(&apos;mass1&apos;,10); smartdown.setVariable(&apos;mass2&apos;,30); smartdown.setVariable(&apos;start&apos;,false); smartdown.setVariable(&apos;particle&apos;,false); let plocked = false; let s1locked = false; let s2locked = false; function starColor(mass) { if (mass &lt; 12.5) { return [255, Math.floor(255 * mass/12.5), 0]; } if (mass &lt; 25) { return [255,255, Math.floor(255*(mass-12.5)/12.5)]; } let value = Math.floor(255 * (25 - (mass - 25))/ 25); return [value, value, 255]; } class Particle { constructor(x, y, u, v) { this.t = 0; this.m = 10; this.pos = p5.createVector(x, y); this.vel = p5.createVector(u, v); this.history = []; } applyForce(force) { this.vel.add(force); } update() { this.history.push(this.pos); this.t++; this.pos.add(this.vel); } render() { p5.stroke(0); p5.noFill(); p5.beginShape(); for (const v of this.history) { p5.vertex(v.x, v.y); } p5.endShape(); p5.fill(0); p5.circle(this.pos.x, this.pos.y, 20); } } class Star extends Particle { constructor(x, y, u, v, m) { super(x, y, u, v); this.m = m; } attract(p) { const force = p5.Vector.sub(this.pos, p.pos); const magSq = force.magSq(); force.setMag(this.m * p.m / magSq); return force; } render() { p5.stroke(102); p5.noFill(); p5.beginShape(); for (const v of this.history) { p5.vertex(v.x, v.y); } p5.endShape(); p5.stroke(0); p5.fill(starColor(this.m)); p5.circle(this.pos.x, this.pos.y, 40); } } function reset(){ smartdown.setVariable(&apos;reset&apos;,false) s1 = new Star((p5.width / 2)-60, p5.height / 2, 0, 1,env.mass1); s2 = new Star((p5.width / 2)+60 , p5.height / 2, 0, -1,env.mass2); p = new Particle((p5.width / 2), (p5.height / 2)+60, 0, 0); } p5.mousePressed = function() { if (incircle(p)) { plocked = true; } if (incircle(s1)) { s1locked = true; } if (incircle(s2)) { s2locked = true; } } p5.mouseReleased = function(){ plocked = false; s1locked = false; s2locked = false; } p5.mouseDragged = function() { if (plocked) { p.pos.x = p5.mouseX; p.pos.y = p5.mouseY; } if (s1locked) { s1.pos.x = p5.mouseX; s1.pos.y = p5.mouseY; } if (s2locked) { s2.pos.x = p5.mouseX; s2.pos.y = p5.mouseY; } } let widthPercent = 0.8; // what percentage of the page width should the app get let heightPercent = 0.7; // what percentage of the page height should the app get p5.setup = function() { p5.frameRate(30); p5.createCanvas(widthPercent*window.innerWidth, heightPercent*window.innerHeight); s1 = new Star((p5.width / 2)-60, p5.height / 2, 0, 1,env.mass1); s2 = new Star((p5.width / 2)+60 , p5.height / 2, 0, -1,env.mass2); p = new Particle((p5.width / 2) , (p5.height / 2)+60, 0, 0); if (env.particle){ p = new Particle((p5.width / 2) , (p5.height / 2)+60, 0, 0); } p5.noStroke(); } function incircle(circle) { let deltaX = p5.mouseX - circle.pos.x; let deltaY = p5.mouseY - circle.pos.y; let distance = Math.sqrt(deltaX**2 + deltaY**2); return distance &lt; 10; } p5.draw = function() { p5.background(100,75,100); p5.frameRate(30); p5.fill(0) s1 = new Star(s1.pos.x, s1.pos.y, s1.vel.x, s1.vel.y, env.mass1); s2 = new Star(s2.pos.x, s2.pos.y, s2.vel.x, s2.vel.y, env.mass2); if (env.particle){ p = new Particle(p.pos.x, p.pos.y, p.vel.x, p.vel.y); } else{ p = new Particle((p5.width / 2) , (p5.height / 2)+60, 0, 0); } if (env.start == true) { s1.applyForce(s2.attract(s1)); s2.applyForce(s1.attract(s2)); p.applyForce(s1.attract(p)); p.applyForce(s2.attract(p)); s1.update(); s1.render(); s2.update(); s2.render(); if (env.particle){ p.update(); p.render(); } if (env.reset) { reset() } }else{ s1.render(); s2.render(); } } ```</summary></entry><entry><title type="html">Bouncy Ball</title><link href="https://izzymones.github.io/blog-kit/posts/circle/" rel="alternate" type="text/html" title="Bouncy Ball" /><published>2022-08-24T00:00:00-07:00</published><updated>2022-08-24T00:00:00-07:00</updated><id>https://izzymones.github.io/blog-kit/posts/circle</id><content type="html" xml:base="https://izzymones.github.io/blog-kit/posts/circle/">This is a simulation of basic physics equations in a two dimensional space. It models a bouncy ball reacting to a downwards gravitational force. I programmed this in [p5 javascript](https://p5js.org/) to get practice simulating simple objects with the intent of working on the two body problem next. 
+
+# :::: instructions
+- Click on the ball and drag to move the ball. 
+- The radius slider changes the size of the ball. 
+- The gravity slider changes the acceleration due to gravity. 
+- The dampening slider changes the energy retained when the ball collides with a wall.
+
+# ::::
+
+[**Instructions**](::instructions/tooltip) [Reset](:=reset=true)
+
+**Radius** [](:?radius|number) [](:-radius/10/100/10)
+
+**Gravity** [](:?gravity|number) [](:-gravity/1/25/1)
+
+**Dampening** [](:?dampening|number) [](:-dampening/0/1/0.05)
+
+Click the gray Stop bar to see the javascript code.
+
+```javascript /p5js/playable/autoplay
+// This code sets the html style of app within the outer html page.  
+// We set it&apos;s width, height and margins 
+const myDiv = this.div;
+myDiv.style.width = &apos;100%&apos;;
+myDiv.style.height = &apos;100%&apos;;
+myDiv.style.margin = &apos;auto&apos;;
+
+smartdown.setVariable(&apos;start&apos;,false);
+let widthPercent = 0.8;  // what percentage of the page width should the app get
+let heightPercent = 0.7; // what percentage of the page height should the app get
+let xpos, ypos; // Starting position of shape
+let frame = 0;
+let damp = 0.8;
+let xspeed, yspeed;
+let time = 0;
+let framerate = 30;
+let rad = 60;
+let locked = false;
+let changeX;
+let changeY;
+let startxpos;
+let startypos;
+
+
+function drawArrow(x1, y1, x2, y2) {
+
+    p5.line(x1, y1, x2, y2); //draw a line beetween the vertices
+
+    // this code is to make the arrow point
+    let angle = Math.atan2(y1 - y2, x1 - x2); //gets the angle of the line
+    let offset = 16;
+    p5.push();
+    p5.translate(x2, y2); //translates to the destination vertex
+    p5.rotate(angle- p5.HALF_PI); //rotates the arrow point
+    p5.triangle(-offset*0.5, offset, offset*0.5, offset, 0, -offset/2); //draws the arrow point as a triangle
+    p5.pop();
+
+}
+function incircle() {
+  let deltaX = p5.mouseX - xpos;
+  let deltaY = p5.mouseY - ypos;
+  let distance = Math.sqrt(deltaX**2 + deltaY**2);
+  return distance &lt; rad;
+}
+
+p5.mousePressed = function() {
+  if (incircle()) {
+    locked = true;
+    p5.fill(255, 255, 255);
+    startxpos = xpos
+    startypos = ypos
+  } else {
+    locked = false;
+  }
+}
+
+p5.mouseReleased = function() {
+    if (locked){
+        changeX = startxpos - p5.mouseX
+        changeY = startypos - p5.mouseY
+        xspeed = -changeX/8
+        yspeed = -changeY/8
+        console.log(changeX,changeY)
+    }
+    locked = false;
+}
+
+function reset() {
+  xspeed = 0; // Speed of the shape
+  yspeed = 0; // Speed of the shape
+  yinit = yspeed
+  // Set the starting position of the shape
+  xpos = p5.width / 2;
+  ypos = p5.height-rad;
+  time = 0
+  smartdown.setVariable(&apos;reset&apos;,false)
+}
+
+
+p5.setup = function() {
+  p5.createCanvas(widthPercent*window.innerWidth, heightPercent*window.innerHeight);
+  reset();
+  p5.noStroke();
+  p5.frameRate(framerate);
+  p5.ellipseMode(p5.RADIUS);
+  smartdown.setVariable(&apos;radius&apos;,60,&apos;number&apos;);
+  smartdown.setVariable(&apos;gravity&apos;,10)
+  smartdown.setVariable(&apos;dampening&apos;,0.8)
+}
+
+
+
+p5.draw = function() {
+    p5.background(25);
+    if (incircle()){
+      if (!locked){      
+        p5.stroke(255);
+        p5.fill(244, 122, 158);
+    }
+
+    } else{
+        p5.stroke(0);
+        p5.fill(244, 122, 158);
+    }
+
+    rad = env.radius; // Width of the shape
+    p5.fill(255,0,255);
+    
+    if (env.reset){
+        reset()
+    }
+
+    if (locked) {
+    }
+    else {
+
+      // first we update the speed
+      // if we haven&apos;t hit the floor, accelerate the y speed
+      if (ypos &lt;= p5.height - rad) {
+        yspeed = yspeed + 5 * env.gravity/framerate; 
+
+      }
+
+      // Update the position of the shape
+      xpos = xpos + xspeed;
+      ypos = ypos + yspeed;
+
+      // Test to see if the shape exceeds the boundaries of the screen
+      // If it does, reverse its direction by multiplying by -1
+
+      if (ypos &gt; p5.height - rad){
+        yspeed = yspeed * (-env.dampening);
+        time = 0;
+        ypos = p5.height - rad;
+      }
+
+      if (xpos &gt; p5.width - rad) { 
+        xspeed = xspeed * (-env.dampening);       
+        xpos = p5.width - rad; 
+      }
+
+      if (xpos &lt; rad) { 
+        xspeed = xspeed * (-env.dampening);    
+        xpos = rad; 
+
+        }
+    }
+    // Draw the shape
+    p5.ellipse(xpos, ypos, rad, rad);
+    p5.fill(250)
+    p5.stroke(250)
+    p5.text(&apos;Height: &apos; + Math.round(-ypos+575-rad),10,30)
+    if (locked){
+        drawArrow(startxpos, startypos, p5.mouseX, p5.mouseY);
+
+    }   
+}   
+    
+p5.windowResized = function(){
+    p5.resizeCanvas(widthPercent*window.innerWidth, heightPercent*window.innerHeight)
+}
+```
+The main formula this simulation uses is $v = v_o + at$ where $v$ is the current velocity, $v_0$ is the initial velocity, $a$ is the acceleration, and $t$ is the time in seconds. This program iteratively edits the objects velocity based on its acceleration and prievious velocity. Vertical and horizontal veloities are handled separately. The horizontal acceleration is always zero and vertical acceleration is downwards. Essentially it sets $t=1$ and just adds the previous velocity to the acceleration and gets the current velocity. These velocities are added to the position to move the ball.</content><author><name>Isidore Mones</name></author><summary type="html">This is a simulation of basic physics equations in a two dimensional space. It models a bouncy ball reacting to a downwards gravitational force. I programmed this in [p5 javascript](https://p5js.org/) to get practice simulating simple objects with the intent of working on the two body problem next. # :::: instructions - Click on the ball and drag to move the ball. - The radius slider changes the size of the ball. - The gravity slider changes the acceleration due to gravity. - The dampening slider changes the energy retained when the ball collides with a wall. # :::: [**Instructions**](::instructions/tooltip) [Reset](:=reset=true) **Radius** [](:?radius|number) [](:-radius/10/100/10) **Gravity** [](:?gravity|number) [](:-gravity/1/25/1) **Dampening** [](:?dampening|number) [](:-dampening/0/1/0.05) Click the gray Stop bar to see the javascript code. ```javascript /p5js/playable/autoplay // This code sets the html style of app within the outer html page. // We set it&apos;s width, height and margins const myDiv = this.div; myDiv.style.width = &apos;100%&apos;; myDiv.style.height = &apos;100%&apos;; myDiv.style.margin = &apos;auto&apos;; smartdown.setVariable(&apos;start&apos;,false); let widthPercent = 0.8; // what percentage of the page width should the app get let heightPercent = 0.7; // what percentage of the page height should the app get let xpos, ypos; // Starting position of shape let frame = 0; let damp = 0.8; let xspeed, yspeed; let time = 0; let framerate = 30; let rad = 60; let locked = false; let changeX; let changeY; let startxpos; let startypos; function drawArrow(x1, y1, x2, y2) { p5.line(x1, y1, x2, y2); //draw a line beetween the vertices // this code is to make the arrow point let angle = Math.atan2(y1 - y2, x1 - x2); //gets the angle of the line let offset = 16; p5.push(); p5.translate(x2, y2); //translates to the destination vertex p5.rotate(angle- p5.HALF_PI); //rotates the arrow point p5.triangle(-offset*0.5, offset, offset*0.5, offset, 0, -offset/2); //draws the arrow point as a triangle p5.pop(); } function incircle() { let deltaX = p5.mouseX - xpos; let deltaY = p5.mouseY - ypos; let distance = Math.sqrt(deltaX**2 + deltaY**2); return distance p5.height - rad){ yspeed = yspeed * (-env.dampening); time = 0; ypos = p5.height - rad; } if (xpos &gt; p5.width - rad) { xspeed = xspeed * (-env.dampening); xpos = p5.width - rad; } if (xpos &lt; rad) { xspeed = xspeed * (-env.dampening); xpos = rad; } } // Draw the shape p5.ellipse(xpos, ypos, rad, rad); p5.fill(250) p5.stroke(250) p5.text(&apos;Height: &apos; + Math.round(-ypos+575-rad),10,30) if (locked){ drawArrow(startxpos, startypos, p5.mouseX, p5.mouseY); } } p5.windowResized = function(){ p5.resizeCanvas(widthPercent*window.innerWidth, heightPercent*window.innerHeight) } ``` The main formula this simulation uses is $v = v_o + at$ where $v$ is the current velocity, $v_0$ is the initial velocity, $a$ is the acceleration, and $t$ is the time in seconds. This program iteratively edits the objects velocity based on its acceleration and prievious velocity. Vertical and horizontal veloities are handled separately. The horizontal acceleration is always zero and vertical acceleration is downwards. Essentially it sets $t=1$ and just adds the previous velocity to the acceleration and gets the current velocity. These velocities are added to the position to move the ball.</summary></entry><entry><title type="html">Rock Climbing</title><link href="https://izzymones.github.io/blog-kit/posts/FirstPost/" rel="alternate" type="text/html" title="Rock Climbing" /><published>2022-08-14T00:00:00-07:00</published><updated>2022-08-14T00:00:00-07:00</updated><id>https://izzymones.github.io/blog-kit/posts/FirstPost</id><content type="html" xml:base="https://izzymones.github.io/blog-kit/posts/FirstPost/">![fullwidth](https://youtu.be/7hS-McBaifs)
+
+One of my extracurricular activities is rock climbing. I have been climbing around 6-10 hours a week for four years and I absolutely adore it. I mostly climb at my local gym, but I will occasionally climb outside. There are a few different kinds of climbing, but I do bouldering, which is at most fifteen feet off the ground and doesn’t use equipment. Bouldering combines athletic performance with intense problem solving. Climbing the most difficult routes requires more than just strength. I take my training pretty seriously, and I have a strength and conditioning training plan, however, strength isn’t what allows you to climb the hardest routes. At its highest level, climbing involves being aware of the physics of a problem. Small changes in where you place your center of gravity, the shape of your body, or how you control your momentum can make a small hand hold workable or lead to a fall. It requires planning and precision. Some people find this kind of climbing tedious or boring, but I never get tired of it.  It requires patience but the thrill you get when you figure out the solution is addicting.  I’ve never been interested in competitive climbing, but I’m proud to be one of the best climbers at my gym climbing at the highest grade. I regularly complete V9 and V10 level climbs which is at the border between advanced and professional levels. Another thing I love about rock climbing is the extremely collaborative aspect of it. Everyone is very supportive of one another and they work together to solve difficult routes. When multiple strong climbers work together to find a working strategy there isn&apos;t much that can stop them from making it to the top.</content><author><name>Isidore Mones</name></author><category term="rockclimbing" /><summary type="html">![fullwidth](https://youtu.be/7hS-McBaifs) One of my extracurricular activities is rock climbing. I have been climbing around 6-10 hours a week for four years and I absolutely adore it. I mostly climb at my local gym, but I will occasionally climb outside. There are a few different kinds of climbing, but I do bouldering, which is at most fifteen feet off the ground and doesn’t use equipment. Bouldering combines athletic performance with intense problem solving. Climbing the most difficult routes requires more than just strength. I take my training pretty seriously, and I have a strength and conditioning training plan, however, strength isn’t what allows you to climb the hardest routes. At its highest level, climbing involves being aware of the physics of a problem. Small changes in where you place your center of gravity, the shape of your body, or how you control your momentum can make a small hand hold workable or lead to a fall. It requires planning and precision. Some people find this kind of climbing tedious or boring, but I never get tired of it. It requires patience but the thrill you get when you figure out the solution is addicting. I’ve never been interested in competitive climbing, but I’m proud to be one of the best climbers at my gym climbing at the highest grade. I regularly complete V9 and V10 level climbs which is at the border between advanced and professional levels. Another thing I love about rock climbing is the extremely collaborative aspect of it. Everyone is very supportive of one another and they work together to solve difficult routes. When multiple strong climbers work together to find a working strategy there isn&apos;t much that can stop them from making it to the top.</summary></entry></feed>

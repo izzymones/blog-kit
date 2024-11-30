@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>
+    swatch - Izzy&#39;s Blog
+    
+  </title>
+
+  <meta name="description" content="Ooooh, color swatch! [](:!c1|markdown) [](:-color1/0/5/0.1) ```javascript /playable/autoplay smartdown.setVariable(&#39;color1&#39;, 1); // this is your function tha...">
+
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="/blog-kit/assets/vendor/bootstrap/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="/blog-kit/assets/vendor/fontawesome-free/css/all.min.css">
+
+  <link rel="stylesheet" href="/blog-kit/assets/main.css">
+  <link rel="canonical" href="https://izzymones.github.io/blog-kit/pages/stuffForIzzy/">
+  <link rel="alternate" type="application/rss+xml" title="Izzy&#39;s Blog" href="/blog-kit/feed.xml">
+
+  
+  <link rel=stylesheet href="https://unpkg.com/smartdown/dist/lib/smartdown.css">
+<link rel=stylesheet href="https://unpkg.com/smartdown/dist/lib/fonts.css">
+<script type="text/javascript" src="https://unpkg.com/smartdown/dist/lib/smartdown.js">
+</script>
+<script type="text/javascript" src="https://unpkg.com/smartdown/dist/lib/calc_handlers.js"></script>
+<script type="text/x-smartdown" id="Home">
+Ooooh, color swatch!
+
+[](:!c1|markdown) [](:-color1/0/5/0.1)
+
+
+```javascript /playable/autoplay
+
+smartdown.setVariable('color1', 1);
+
+
+// this is your function that you wrote to make the color from the slider
+// you don't need to add it to your program! I just needed it to make this 
+// example work.
+function spectrumProcess(number){
+  let answer = [0,0,0]
+  if (number <= 1 && number >= 0){
+    answer[0] = 1 - number
+    answer[2] = 1
+  }
+  if (number <= 2 && number > 1){
+    answer[1] = number - 1
+    answer[2] = 1
+  }
+  if (number <= 3 && number > 2){
+    answer[2] = 3 - number
+    answer[1] = 1
+  }
+  if (number <= 4 && number > 3){
+    answer[0] = number - 3
+    answer[1] = 1
+  }
+  if (number <= 5 && number > 4){
+    answer[1] = 5 - number
+    answer[0] = 1
+  }
+  if (number <= 6 && number > 5){
+    answer[2] = number-5
+    answer[0] = 1
+  }
+  return answer
+}
+
+
+function buildColor(r, g, b) {
+  const rPadded = r.toString(16).padStart(2, '0');
+  const gPadded = g.toString(16).padStart(2, '0');
+  const bPadded = b.toString(16).padStart(2, '0');
+  return `#${rPadded}${gPadded}${bPadded}`;
+}
+
+
+
+function dependOnColor1() {
+  let rgb = spectrumProcess(env.color1);
+  for (let i=0; i < rgb.length; i++) { rgb[i] = Math.floor(rgb[i] * 255); }
+
+  const colorName = buildColor(rgb[0], rgb[1], rgb[2]);
+  console.log(colorName);
+  const color = `![swatch](${colorName})`;
+  smartdown.set('c1', color);
+};
+
+// this is another way to write a depends function 
+// This is in Dan's code and I didn't even know you could do this.
+// It seems to not work with the other version of dependsOn so you'll probably have to 
+// pick one way or the other of doing dependsOn.
+this.dependOn.color1 = dependOnColor1
+
+
+
+
+
+
+// this is the new exportImage function that works
+function exportImage() {
+
+  // this function was taking too long.  Instead of waiting for this function to finish, it was 
+  // going ahead and trying to write the imgData to the new tab.  But the data wasn't there yet.
+  // This resulted in a blank page if the page was full resolution.
+  // It doesn't happen at all on my computer because my CPU might be a little faster.
+  const imgData = canvas.toDataURL("image/jpg");
+
+  let x = window.open();
+
+  // the solution is to wrap the display part of the function in a timeout function.  It will wait 1.5
+  // seconds before running the display code.  This gives the canvas a little more time to return
+  // the data.  There's probably a better way to do this with Promises and Asynch functions 
+  // but we'd need to look up the right way to do it.
+  setTimeout( function(params) {
+    let [x, imgData] = params;
+    console.log('opening tab');
+    let iframe = "<iframe width='100%' height='100%' src='" + imgData + "'></iframe>"
+    x.document.open();
+    x.document.write(iframe);
+    x.document.close();
+  }, 1500, [x, imgData]);
+}
+
+
+
+
+
+
+// This is code to make drawing only happen 2 times per second
+// add this and you can make drawing automatic anytime a color or setting is changed.
+
+// add a variable that controls access to the draw function
+let allow_redraw = true;
+
+
+function draw() {
+
+  // put this code at the beginning of your draw function
+
+  if (!allow_redraw) { return; }   // if we don't have draw permission, return without drawing
+  allow_redraw = false;            // if we're here we had draw permission, we're going to draw
+                                   // so turn drawing off for after we finish our draw
+  setTimeout(function() { allow_redraw = true; }, 500);  // after half a second turn draw back on
+
+
+}
+```
+
+
+</script>
+
+  
+
+  
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="noheadernavbar navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+
+  <div class="container">
+    <a class="navbar-brand" href="/blog-kit/">  
+      <!-- <img src="/blog-kit/assets/images/wildthinksLogo.svg" height="30"> -->
+    </a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      Menu
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      
+      <ul class="noheadernav navbar-nav ml-auto">
+      
+        <li class="nav-item">
+          <a class="nav-link" href="/blog-kit/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/blog-kit/pages/About/">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/blog-kit/posts">Blog</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+  <!-- Page Header -->
+
+<header id="header-wrapper" class="masthead noheader">
+</header>  
+  
+
+
+
+  <div id="smartdown-outer-container"class="container-fluid smartdown-outer-container smartdown-theme-blogx">
+    <div class="row">
+      <div class="col-xs-12 smartdown-container" id="blog-content">
+      <!-- <div class="col-lg-8 col-md-10 mx-auto smartdown-container" id="blog-content"> -->
+
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <ul class="list-inline text-center">
+          
+          <li class="list-inline-item">
+            <a href="mailto:izzymones@gmail.com">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="far fa-envelope fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          
+          
+          
+          <li class="list-inline-item">
+            <a href="https://github.com/izzymones">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+        </ul>
+        <p class="copyright text-muted">Copyright &copy; Isidore Mones 2024</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/blog-kit/assets/vendor/startbootstrap-clean-blog/js/scripts.js"></script>
+
+<script src="/blog-kit/assets/scripts.js"></script>
+
+
+
+
+  
+  <script>
+  /* global smartdown */
+  var baseURL = '/blog-kit/';
+  var icons = {
+    'hypercube': `/assets/images/Hypercube.svg`,
+    'StalactiteStalagmite': `/assets/images/StalactiteStalagmite.svg`
+  };
+
+  var multiparts = null;
+  var current = null;
+
+
+  function cardLoaded(url, cardKeySubhash, sourceText) {
+    /* eslint no-invalid-this: 0 */
+    sourceText = sourceText.trim();
+    multiparts = smartdown.partitionMultipart(sourceText);
+
+    if (url.endsWith('.md')) {
+      const newPath = url.replace(/\.md$/, '/');
+      current = newPath;
+      history.pushState(null, null, newPath);
+    }
+
+    var output = document.getElementById('blog-content');
+    smartdown.setHome(multiparts._default_, output, function() {
+      document.body.scrollTop = 0; // For Chrome, Safari and Opera
+      document.documentElement.scrollTop = 0; // For IE and Firefox
+
+      if (cardKeySubhash) {
+        const target = document.getElementById(cardKeySubhash);
+        if (target) {
+          target.scrollIntoView();
+        }
+      }
+
+      smartdown.startAutoplay(output);
+    });
+  }
+
+  function loadURL(url) {
+    var oReq = new XMLHttpRequest();
+    let cardKeySubhash = null;
+    const hashPos = url.indexOf('#');
+    if (hashPos >= 0) {
+      cardKeySubhash = url.slice(hashPos + 1);
+    }
+
+    oReq.addEventListener('load', function() {
+      cardLoaded(url, cardKeySubhash, this.responseText);
+    });
+    oReq.open('GET', url);
+    oReq.send();
+  }
+
+  function loadInline() {
+    smartdown.loadCardsFromDocumentScripts();
+    var s = smartdown.smartdownScripts[0];
+
+    cardLoaded(window.location.href, window.location.hash.slice(1), s.text);
+  }
+
+  function cardLoader(cardKey) {
+    console.log('cardLoader', cardKey);
+    var part = multiparts[cardKey];
+    if (part) {
+      var output = document.getElementById('blog-content');
+      smartdown.setHome(part, output, function() {
+        smartdown.startAutoplay(output);
+      });
+    }
+    else {
+      var cardURL = cardKey;
+      if (cardKey.indexOf('http') === 0) {
+        cardURL = cardKey;
+      }
+      else {
+        const expanded = smartdown.expandHrefWithLinkRules(cardURL);
+        // console.log('cardloader', cardURL, expanded);
+        cardURL = expanded;
+      }
+      // else if (cardKey.indexOf('/posts') === 0) {
+      //   cardURL = `${baseURL}${cardKey}`;
+      //   console.log('cardLoader', cardKey, cardURL);
+      // }
+      loadURL(cardURL);
+    }
+  }
+
+  var calcHandlers = smartdown.defaultCalcHandlers;
+  const linkRules = [
+    {
+      prefix: '/posts/',
+      replace: baseURL + '/posts/',
+    },
+    {
+      prefix: '/pages/',
+      replace: baseURL + '/pages/',
+    },
+    {
+      prefix: '/assets/',
+      replace: baseURL + '/assets/',
+    },
+  ];
+
+
+
+  window.addEventListener(
+    'popstate',
+    function(event) {
+      console.log('popstate', event);
+      // const url = document.location.pathname;
+      // if (url.endsWith('/')) {
+      //   const newPath = url.replace(/\/$/, '.md');
+      //   // console.log('popstatex: ', url, newPath, current, window.location.hash);
+      //   if (current && url !== current) {
+      //     loadURL(newPath);
+      //   }
+      // }
+    },
+    false);
+  // window.addEventListener(
+  //   'hashchange',
+  //   function(event) {
+  //     console.log(
+  //       'hashchange document.location.pathname: ' + document.location.pathname,
+  //       JSON.stringify(event.state));
+  //   },
+  //   false);
+
+  smartdown.initialize(icons, `https://unpkg.com/smartdown/dist/`, loadInline, cardLoader, calcHandlers, linkRules);
+</script>
+
+  
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

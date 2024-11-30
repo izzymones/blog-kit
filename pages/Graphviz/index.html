@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>
+    Graphviz Example - Izzy&#39;s Blog
+    
+  </title>
+
+  <meta name="description" content="### Graphviz via `viz.js` Smartdown has integrated the powerful [viz.js](https://github.com/mdaines/viz.js) library, which is compiled into Javascript from t...">
+
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="/blog-kit/assets/vendor/bootstrap/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="/blog-kit/assets/vendor/fontawesome-free/css/all.min.css">
+
+  <link rel="stylesheet" href="/blog-kit/assets/main.css">
+  <link rel="canonical" href="https://izzymones.github.io/blog-kit/pages/Graphviz/">
+  <link rel="alternate" type="application/rss+xml" title="Izzy&#39;s Blog" href="/blog-kit/feed.xml">
+
+  
+  <link rel=stylesheet href="https://unpkg.com/smartdown/dist/lib/smartdown.css">
+<link rel=stylesheet href="https://unpkg.com/smartdown/dist/lib/fonts.css">
+<script type="text/javascript" src="https://unpkg.com/smartdown/dist/lib/smartdown.js">
+</script>
+<script type="text/javascript" src="https://unpkg.com/smartdown/dist/lib/calc_handlers.js"></script>
+<script type="text/x-smartdown" id="Home">
+### Graphviz via `viz.js`
+
+Smartdown has integrated the powerful [viz.js](https://github.com/mdaines/viz.js) library, which is compiled into Javascript from the original Graphviz C code.
+
+Note: There is a similarly named package at [https://visjs.org](https://visjs.org) which Smartdown does not currently use.
+
+There is a Graphviz example displaying the `stdlib` namespaces at [Stdlib via Graphviz](:@Stdlib)
+
+#### Crazy.gv
+
+```graphviz/playable
+digraph "unix" {
+  graph [ fontname = "Helvetica-Oblique",
+    fontsize = 36,
+    label = "\n\n\n\nObject Oriented Graphs\nStephen North, 3/19/93",
+    size = "12,12" ];
+  node [  shape = polygon,
+    sides = 4,
+    distortion = "0.0",
+    orientation = "0.0",
+    skew = "0.0",
+    color = white,
+    style = filled,
+    fontname = "Helvetica-Outline",
+    fontsize = "36"];
+  "5th Edition" [sides=9, distortion="0.936354", orientation=28, skew="-0.126818", color=salmon2];
+  "6th Edition" [sides=5, distortion="0.238792", orientation=11, skew="0.995935", color=deepskyblue];
+  "PWB 1.0" [sides=8, distortion="0.019636", orientation=79, skew="-0.440424", color=goldenrod2];
+  LSX [sides=9, distortion="-0.698271", orientation=22, skew="-0.195492", color=burlywood2];
+  "1 BSD" [sides=7, distortion="0.265084", orientation=26, skew="0.403659", color=gold1];
+  "Mini Unix" [distortion="0.039386", orientation=2, skew="-0.461120", color=greenyellow];
+  Wollongong [sides=5, distortion="0.228564", orientation=63, skew="-0.062846", color=darkseagreen];
+  Interdata [distortion="0.624013", orientation=56, skew="0.101396", color=dodgerblue1];
+  "Unix/TS 3.0" [sides=8, distortion="0.731383", orientation=43, skew="-0.824612", color=thistle2];
+  "PWB 2.0" [sides=6, distortion="0.592100", orientation=34, skew="-0.719269", color=darkolivegreen3];
+  "7th Edition" [sides=10, distortion="0.298417", orientation=65, skew="0.310367", color=chocolate];
+  "8th Edition" [distortion="-0.997093", orientation=50, skew="-0.061117", color=turquoise3];
+  "32V" [sides=7, distortion="0.878516", orientation=19, skew="0.592905", color=steelblue3];
+  V7M [sides=10, distortion="-0.960249", orientation=32, skew="0.460424", color=navy];
+  "Ultrix-11" [sides=10, distortion="-0.633186", orientation=10, skew="0.333125", color=darkseagreen4];
+  Xenix [sides=8, distortion="-0.337997", orientation=52, skew="-0.760726", color=coral];
+  "UniPlus+" [sides=7, distortion="0.788483", orientation=39, skew="-0.526284", color=darkolivegreen3];
+  "9th Edition" [sides=7, distortion="0.138690", orientation=55, skew="0.554049", color=coral3];
+  "2 BSD" [sides=7, distortion="-0.010661", orientation=84, skew="0.179249", color=blanchedalmond];
+  "2.8 BSD" [distortion="-0.239422", orientation=44, skew="0.053841", color=lightskyblue1];
+  "2.9 BSD" [distortion="-0.843381", orientation=70, skew="-0.601395", color=aquamarine2];
+  "3 BSD" [sides=10, distortion="0.251820", orientation=18, skew="-0.530618", color=lemonchiffon];
+  "4 BSD" [sides=5, distortion="-0.772300", orientation=24, skew="-0.028475", color=darkorange1];
+  "4.1 BSD" [distortion="-0.226170", orientation=38, skew="0.504053", color=lightyellow1];
+  "4.2 BSD" [sides=10, distortion="-0.807349", orientation=50, skew="-0.908842", color=darkorchid4];
+  "4.3 BSD" [sides=10, distortion="-0.030619", orientation=76, skew="0.985021", color=lemonchiffon2];
+  "Ultrix-32" [distortion="-0.644209", orientation=21, skew="0.307836", color=goldenrod3];
+  "PWB 1.2" [sides=7, distortion="0.640971", orientation=84, skew="-0.768455", color=cyan];
+  "USG 1.0" [distortion="0.758942", orientation=42, skew="0.039886", color=blue];
+  "CB Unix 1" [sides=9, distortion="-0.348692", orientation=42, skew="0.767058", color=firebrick];
+  "USG 2.0" [distortion="0.748625", orientation=74, skew="-0.647656", color=chartreuse4];
+  "CB Unix 2" [sides=10, distortion="0.851818", orientation=32, skew="-0.020120", color=greenyellow];
+  "CB Unix 3" [sides=10, distortion="0.992237", orientation=29, skew="0.256102", color=bisque4];
+  "Unix/TS++" [sides=6, distortion="0.545461", orientation=16, skew="0.313589", color=mistyrose2];
+  "PDP-11 Sys V" [sides=9, distortion="-0.267769", orientation=40, skew="0.271226", color=cadetblue1];
+  "USG 3.0" [distortion="-0.848455", orientation=44, skew="0.267152", color=bisque2];
+  "Unix/TS 1.0" [distortion="0.305594", orientation=75, skew="0.070516", color=orangered];
+  "TS 4.0" [sides=10, distortion="-0.641701", orientation=50, skew="-0.952502", color=crimson];
+  "System V.0" [sides=9, distortion="0.021556", orientation=26, skew="-0.729938", color=darkorange1];
+  "System V.2" [sides=6, distortion="0.985153", orientation=33, skew="-0.399752", color=darkolivegreen4];
+  "System V.3" [sides=7, distortion="-0.687574", orientation=58, skew="-0.180116", color=lightsteelblue1];
+  "5th Edition" -> "6th Edition";
+  "5th Edition" -> "PWB 1.0";
+  "6th Edition" -> LSX;
+  "6th Edition" -> "1 BSD";
+  "6th Edition" -> "Mini Unix";
+  "6th Edition" -> Wollongong;
+  "6th Edition" -> Interdata;
+  Interdata -> "Unix/TS 3.0";
+  Interdata -> "PWB 2.0";
+  Interdata -> "7th Edition";
+  "7th Edition" -> "8th Edition";
+  "7th Edition" -> "32V";
+  "7th Edition" -> V7M;
+  "7th Edition" -> "Ultrix-11";
+  "7th Edition" -> Xenix;
+  "7th Edition" -> "UniPlus+";
+  V7M -> "Ultrix-11";
+  "8th Edition" -> "9th Edition";
+  "1 BSD" -> "2 BSD";
+  "2 BSD" -> "2.8 BSD";
+  "2.8 BSD" -> "Ultrix-11";
+  "2.8 BSD" -> "2.9 BSD";
+  "32V" -> "3 BSD";
+  "3 BSD" -> "4 BSD";
+  "4 BSD" -> "4.1 BSD";
+  "4.1 BSD" -> "4.2 BSD";
+  "4.1 BSD" -> "2.8 BSD";
+  "4.1 BSD" -> "8th Edition";
+  "4.2 BSD" -> "4.3 BSD";
+  "4.2 BSD" -> "Ultrix-32";
+  "PWB 1.0" -> "PWB 1.2";
+  "PWB 1.0" -> "USG 1.0";
+  "PWB 1.2" -> "PWB 2.0";
+  "USG 1.0" -> "CB Unix 1";
+  "USG 1.0" -> "USG 2.0";
+  "CB Unix 1" -> "CB Unix 2";
+  "CB Unix 2" -> "CB Unix 3";
+  "CB Unix 3" -> "Unix/TS++";
+  "CB Unix 3" -> "PDP-11 Sys V";
+  "USG 2.0" -> "USG 3.0";
+  "USG 3.0" -> "Unix/TS 3.0";
+  "PWB 2.0" -> "Unix/TS 3.0";
+  "Unix/TS 1.0" -> "Unix/TS 3.0";
+  "Unix/TS 3.0" -> "TS 4.0";
+  "Unix/TS++" -> "TS 4.0";
+  "CB Unix 3" -> "TS 4.0";
+  "TS 4.0" -> "System V.0";
+  "System V.0" -> "System V.2";
+  "System V.2" -> "System V.3";
+}
+```
+
+
+
+---
+
+- [About smartdown/blog-kit](/pages/AboutBlogKit)
+- [P5JS Ellipse Example](/pages/Ellipse)
+- [P5JS Mobius Strip Example](/pages/Mobius)
+- [P5JS Dungeon Example](/pages/Dungeon)
+- [About this Site](/pages/About)
+
+---
+
+*Page Source: [`/pages/Graphviz.md`](/pages/Graphviz.md#-blank)*
+
+
+</script>
+
+  
+
+  
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+
+  <div class="container">
+    <a class="navbar-brand" href="/blog-kit/">  
+      <!-- <img src="/blog-kit/assets/images/wildthinksLogo.svg" height="30"> -->
+    </a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      Menu
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      
+      <ul class="navbar-nav ml-auto">
+      
+        <li class="nav-item">
+          <a class="nav-link" href="/blog-kit/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/blog-kit/pages/About/">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/blog-kit/posts">Blog</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+  <!-- Page Header -->
+
+
+
+
+<header id="header-wrapper" class="masthead" style="background-image: url('/blog-kit/img/bg-abk.jpg')">
+
+
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+
+        <!-- test for a narrow header -->
+        
+        <div class="post-heading">
+        
+
+          <h1>Graphviz Example</h1>
+          
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+</header>
+
+
+
+  <div id="smartdown-outer-container"class="container-fluid smartdown-outer-container smartdown-theme-blogx">
+    <div class="row">
+      <div class="col-xs-12 smartdown-container" id="blog-content">
+      <!-- <div class="col-lg-8 col-md-10 mx-auto smartdown-container" id="blog-content"> -->
+
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <ul class="list-inline text-center">
+          
+          <li class="list-inline-item">
+            <a href="mailto:izzymones@gmail.com">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="far fa-envelope fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          
+          
+          
+          <li class="list-inline-item">
+            <a href="https://github.com/izzymones">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+        </ul>
+        <p class="copyright text-muted">Copyright &copy; Isidore Mones 2024</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/blog-kit/assets/vendor/startbootstrap-clean-blog/js/scripts.js"></script>
+
+<script src="/blog-kit/assets/scripts.js"></script>
+
+
+
+
+  
+  <script>
+  /* global smartdown */
+  var baseURL = '/blog-kit/';
+  var icons = {
+    'hypercube': `/assets/images/Hypercube.svg`,
+    'StalactiteStalagmite': `/assets/images/StalactiteStalagmite.svg`
+  };
+
+  var multiparts = null;
+  var current = null;
+
+
+  function cardLoaded(url, cardKeySubhash, sourceText) {
+    /* eslint no-invalid-this: 0 */
+    sourceText = sourceText.trim();
+    multiparts = smartdown.partitionMultipart(sourceText);
+
+    if (url.endsWith('.md')) {
+      const newPath = url.replace(/\.md$/, '/');
+      current = newPath;
+      history.pushState(null, null, newPath);
+    }
+
+    var output = document.getElementById('blog-content');
+    smartdown.setHome(multiparts._default_, output, function() {
+      document.body.scrollTop = 0; // For Chrome, Safari and Opera
+      document.documentElement.scrollTop = 0; // For IE and Firefox
+
+      if (cardKeySubhash) {
+        const target = document.getElementById(cardKeySubhash);
+        if (target) {
+          target.scrollIntoView();
+        }
+      }
+
+      smartdown.startAutoplay(output);
+    });
+  }
+
+  function loadURL(url) {
+    var oReq = new XMLHttpRequest();
+    let cardKeySubhash = null;
+    const hashPos = url.indexOf('#');
+    if (hashPos >= 0) {
+      cardKeySubhash = url.slice(hashPos + 1);
+    }
+
+    oReq.addEventListener('load', function() {
+      cardLoaded(url, cardKeySubhash, this.responseText);
+    });
+    oReq.open('GET', url);
+    oReq.send();
+  }
+
+  function loadInline() {
+    smartdown.loadCardsFromDocumentScripts();
+    var s = smartdown.smartdownScripts[0];
+
+    cardLoaded(window.location.href, window.location.hash.slice(1), s.text);
+  }
+
+  function cardLoader(cardKey) {
+    console.log('cardLoader', cardKey);
+    var part = multiparts[cardKey];
+    if (part) {
+      var output = document.getElementById('blog-content');
+      smartdown.setHome(part, output, function() {
+        smartdown.startAutoplay(output);
+      });
+    }
+    else {
+      var cardURL = cardKey;
+      if (cardKey.indexOf('http') === 0) {
+        cardURL = cardKey;
+      }
+      else {
+        const expanded = smartdown.expandHrefWithLinkRules(cardURL);
+        // console.log('cardloader', cardURL, expanded);
+        cardURL = expanded;
+      }
+      // else if (cardKey.indexOf('/posts') === 0) {
+      //   cardURL = `${baseURL}${cardKey}`;
+      //   console.log('cardLoader', cardKey, cardURL);
+      // }
+      loadURL(cardURL);
+    }
+  }
+
+  var calcHandlers = smartdown.defaultCalcHandlers;
+  const linkRules = [
+    {
+      prefix: '/posts/',
+      replace: baseURL + '/posts/',
+    },
+    {
+      prefix: '/pages/',
+      replace: baseURL + '/pages/',
+    },
+    {
+      prefix: '/assets/',
+      replace: baseURL + '/assets/',
+    },
+  ];
+
+
+
+  window.addEventListener(
+    'popstate',
+    function(event) {
+      console.log('popstate', event);
+      // const url = document.location.pathname;
+      // if (url.endsWith('/')) {
+      //   const newPath = url.replace(/\/$/, '.md');
+      //   // console.log('popstatex: ', url, newPath, current, window.location.hash);
+      //   if (current && url !== current) {
+      //     loadURL(newPath);
+      //   }
+      // }
+    },
+    false);
+  // window.addEventListener(
+  //   'hashchange',
+  //   function(event) {
+  //     console.log(
+  //       'hashchange document.location.pathname: ' + document.location.pathname,
+  //       JSON.stringify(event.state));
+  //   },
+  //   false);
+
+  smartdown.initialize(icons, `https://unpkg.com/smartdown/dist/`, loadInline, cardLoader, calcHandlers, linkRules);
+</script>
+
+  
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

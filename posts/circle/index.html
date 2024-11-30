@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>
+    Bouncy Ball - Izzy&#39;s Blog
+    
+  </title>
+
+  <meta name="description" content="This is a simulation of basic physics equations in a two dimensional space. It models a bouncy ball reacting to a downwards gravitational force. I programmed...">
+
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="/blog-kit/assets/vendor/bootstrap/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="/blog-kit/assets/vendor/fontawesome-free/css/all.min.css">
+
+  <link rel="stylesheet" href="/blog-kit/assets/main.css">
+  <link rel="canonical" href="https://izzymones.github.io/blog-kit/posts/circle/">
+  <link rel="alternate" type="application/rss+xml" title="Izzy&#39;s Blog" href="/blog-kit/feed.xml">
+
+  
+  <link rel=stylesheet href="https://unpkg.com/smartdown/dist/lib/smartdown.css">
+<link rel=stylesheet href="https://unpkg.com/smartdown/dist/lib/fonts.css">
+<script type="text/javascript" src="https://unpkg.com/smartdown/dist/lib/smartdown.js">
+</script>
+<script type="text/javascript" src="https://unpkg.com/smartdown/dist/lib/calc_handlers.js"></script>
+<script type="text/x-smartdown" id="Home">
+This is a simulation of basic physics equations in a two dimensional space. It models a bouncy ball reacting to a downwards gravitational force. I programmed this in [p5 javascript](https://p5js.org/) to get practice simulating simple objects with the intent of working on the two body problem next. 
+
+# :::: instructions
+- Click on the ball and drag to move the ball. 
+- The radius slider changes the size of the ball. 
+- The gravity slider changes the acceleration due to gravity. 
+- The dampening slider changes the energy retained when the ball collides with a wall.
+
+# ::::
+
+[**Instructions**](::instructions/tooltip) [Reset](:=reset=true)
+
+**Radius** [](:?radius|number) [](:-radius/10/100/10)
+
+**Gravity** [](:?gravity|number) [](:-gravity/1/25/1)
+
+**Dampening** [](:?dampening|number) [](:-dampening/0/1/0.05)
+
+Click the gray Stop bar to see the javascript code.
+
+```javascript /p5js/playable/autoplay
+// This code sets the html style of app within the outer html page.  
+// We set it's width, height and margins 
+const myDiv = this.div;
+myDiv.style.width = '100%';
+myDiv.style.height = '100%';
+myDiv.style.margin = 'auto';
+
+smartdown.setVariable('start',false);
+let widthPercent = 0.8;  // what percentage of the page width should the app get
+let heightPercent = 0.7; // what percentage of the page height should the app get
+let xpos, ypos; // Starting position of shape
+let frame = 0;
+let damp = 0.8;
+let xspeed, yspeed;
+let time = 0;
+let framerate = 30;
+let rad = 60;
+let locked = false;
+let changeX;
+let changeY;
+let startxpos;
+let startypos;
+
+
+function drawArrow(x1, y1, x2, y2) {
+
+    p5.line(x1, y1, x2, y2); //draw a line beetween the vertices
+
+    // this code is to make the arrow point
+    let angle = Math.atan2(y1 - y2, x1 - x2); //gets the angle of the line
+    let offset = 16;
+    p5.push();
+    p5.translate(x2, y2); //translates to the destination vertex
+    p5.rotate(angle- p5.HALF_PI); //rotates the arrow point
+    p5.triangle(-offset*0.5, offset, offset*0.5, offset, 0, -offset/2); //draws the arrow point as a triangle
+    p5.pop();
+
+}
+function incircle() {
+  let deltaX = p5.mouseX - xpos;
+  let deltaY = p5.mouseY - ypos;
+  let distance = Math.sqrt(deltaX**2 + deltaY**2);
+  return distance < rad;
+}
+
+p5.mousePressed = function() {
+  if (incircle()) {
+    locked = true;
+    p5.fill(255, 255, 255);
+    startxpos = xpos
+    startypos = ypos
+  } else {
+    locked = false;
+  }
+}
+
+p5.mouseReleased = function() {
+    if (locked){
+        changeX = startxpos - p5.mouseX
+        changeY = startypos - p5.mouseY
+        xspeed = -changeX/8
+        yspeed = -changeY/8
+        console.log(changeX,changeY)
+    }
+    locked = false;
+}
+
+function reset() {
+  xspeed = 0; // Speed of the shape
+  yspeed = 0; // Speed of the shape
+  yinit = yspeed
+  // Set the starting position of the shape
+  xpos = p5.width / 2;
+  ypos = p5.height-rad;
+  time = 0
+  smartdown.setVariable('reset',false)
+}
+
+
+p5.setup = function() {
+  p5.createCanvas(widthPercent*window.innerWidth, heightPercent*window.innerHeight);
+  reset();
+  p5.noStroke();
+  p5.frameRate(framerate);
+  p5.ellipseMode(p5.RADIUS);
+  smartdown.setVariable('radius',60,'number');
+  smartdown.setVariable('gravity',10)
+  smartdown.setVariable('dampening',0.8)
+}
+
+
+
+p5.draw = function() {
+    p5.background(25);
+    if (incircle()){
+      if (!locked){      
+        p5.stroke(255);
+        p5.fill(244, 122, 158);
+    }
+
+    } else{
+        p5.stroke(0);
+        p5.fill(244, 122, 158);
+    }
+
+    rad = env.radius; // Width of the shape
+    p5.fill(255,0,255);
+    
+    if (env.reset){
+        reset()
+    }
+
+    if (locked) {
+    }
+    else {
+
+      // first we update the speed
+      // if we haven't hit the floor, accelerate the y speed
+      if (ypos <= p5.height - rad) {
+        yspeed = yspeed + 5 * env.gravity/framerate; 
+
+      }
+
+      // Update the position of the shape
+      xpos = xpos + xspeed;
+      ypos = ypos + yspeed;
+
+      // Test to see if the shape exceeds the boundaries of the screen
+      // If it does, reverse its direction by multiplying by -1
+
+      if (ypos > p5.height - rad){
+        yspeed = yspeed * (-env.dampening);
+        time = 0;
+        ypos = p5.height - rad;
+      }
+
+      if (xpos > p5.width - rad) { 
+        xspeed = xspeed * (-env.dampening);       
+        xpos = p5.width - rad; 
+      }
+
+      if (xpos < rad) { 
+        xspeed = xspeed * (-env.dampening);    
+        xpos = rad; 
+
+        }
+    }
+    // Draw the shape
+    p5.ellipse(xpos, ypos, rad, rad);
+    p5.fill(250)
+    p5.stroke(250)
+    p5.text('Height: ' + Math.round(-ypos+575-rad),10,30)
+    if (locked){
+        drawArrow(startxpos, startypos, p5.mouseX, p5.mouseY);
+
+    }   
+}   
+    
+p5.windowResized = function(){
+    p5.resizeCanvas(widthPercent*window.innerWidth, heightPercent*window.innerHeight)
+}
+```
+The main formula this simulation uses is $v = v_o + at$ where $v$ is the current velocity, $v_0$ is the initial velocity, $a$ is the acceleration, and $t$ is the time in seconds. This program iteratively edits the objects velocity based on its acceleration and prievious velocity. Vertical and horizontal veloities are handled separately. The horizontal acceleration is always zero and vertical acceleration is downwards. Essentially it sets $t=1$ and just adds the previous velocity to the acceleration and gets the current velocity. These velocities are added to the position to move the ball.
+</script>
+
+  
+
+  
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+
+  <div class="container">
+    <a class="navbar-brand" href="/blog-kit/">  
+      <!-- <img src="/blog-kit/assets/images/wildthinksLogo.svg" height="30"> -->
+    </a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      Menu
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      
+      <ul class="navbar-nav ml-auto">
+      
+        <li class="nav-item">
+          <a class="nav-link" href="/blog-kit/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/blog-kit/pages/About/">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/blog-kit/posts">Blog</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+    <!-- Page Header -->
+
+
+
+
+<header id="header-wrapper" class="masthead" style="background-image: url('/blog-kit/assets/images/bounce.jpeg')">
+
+
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+
+        <!-- test for a narrow header -->
+        
+        <div class="post-heading narrow-heading">
+        
+
+          <h1>Bouncy Ball</h1>
+          
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+</header>
+
+
+  
+  <div id="smartdown-outer-container" class="container-fluid smartdown-outer-container xsmartdown-theme">
+    <div class="row">
+      <div class="col-xs-12 smartdown-container" id="blog-content">
+      </div>
+    </div>
+    <div>
+      <div>
+
+  
+
+      <hr>
+
+        <div class="clearfix">
+
+          
+          <a class="btn btn-primary float-left" href="/blog-kit/posts/FirstPost/" data-toggle="tooltip" data-placement="top" title="Rock Climbing">&larr; Previous<span class="d-none d-md-inline">
+              Post</span></a>
+          
+          
+          <a class="btn btn-primary float-right" href="/blog-kit/posts/twobody/" data-toggle="tooltip" data-placement="top" title="Two Body Problem">Next<span class="d-none d-md-inline">
+              Post</span> &rarr;</a>
+          
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <ul class="list-inline text-center">
+          
+          <li class="list-inline-item">
+            <a href="mailto:izzymones@gmail.com">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="far fa-envelope fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          
+          
+          
+          <li class="list-inline-item">
+            <a href="https://github.com/izzymones">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+        </ul>
+        <p class="copyright text-muted">Copyright &copy; Isidore Mones 2024</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/blog-kit/assets/vendor/startbootstrap-clean-blog/js/scripts.js"></script>
+
+<script src="/blog-kit/assets/scripts.js"></script>
+
+
+
+
+  
+  <script>
+  /* global smartdown */
+  var baseURL = '/blog-kit/';
+  var icons = {
+    'hypercube': `/assets/images/Hypercube.svg`,
+    'StalactiteStalagmite': `/assets/images/StalactiteStalagmite.svg`
+  };
+
+  var multiparts = null;
+  var current = null;
+
+
+  function cardLoaded(url, cardKeySubhash, sourceText) {
+    /* eslint no-invalid-this: 0 */
+    sourceText = sourceText.trim();
+    multiparts = smartdown.partitionMultipart(sourceText);
+
+    if (url.endsWith('.md')) {
+      const newPath = url.replace(/\.md$/, '/');
+      current = newPath;
+      history.pushState(null, null, newPath);
+    }
+
+    var output = document.getElementById('blog-content');
+    smartdown.setHome(multiparts._default_, output, function() {
+      document.body.scrollTop = 0; // For Chrome, Safari and Opera
+      document.documentElement.scrollTop = 0; // For IE and Firefox
+
+      if (cardKeySubhash) {
+        const target = document.getElementById(cardKeySubhash);
+        if (target) {
+          target.scrollIntoView();
+        }
+      }
+
+      smartdown.startAutoplay(output);
+    });
+  }
+
+  function loadURL(url) {
+    var oReq = new XMLHttpRequest();
+    let cardKeySubhash = null;
+    const hashPos = url.indexOf('#');
+    if (hashPos >= 0) {
+      cardKeySubhash = url.slice(hashPos + 1);
+    }
+
+    oReq.addEventListener('load', function() {
+      cardLoaded(url, cardKeySubhash, this.responseText);
+    });
+    oReq.open('GET', url);
+    oReq.send();
+  }
+
+  function loadInline() {
+    smartdown.loadCardsFromDocumentScripts();
+    var s = smartdown.smartdownScripts[0];
+
+    cardLoaded(window.location.href, window.location.hash.slice(1), s.text);
+  }
+
+  function cardLoader(cardKey) {
+    console.log('cardLoader', cardKey);
+    var part = multiparts[cardKey];
+    if (part) {
+      var output = document.getElementById('blog-content');
+      smartdown.setHome(part, output, function() {
+        smartdown.startAutoplay(output);
+      });
+    }
+    else {
+      var cardURL = cardKey;
+      if (cardKey.indexOf('http') === 0) {
+        cardURL = cardKey;
+      }
+      else {
+        const expanded = smartdown.expandHrefWithLinkRules(cardURL);
+        // console.log('cardloader', cardURL, expanded);
+        cardURL = expanded;
+      }
+      // else if (cardKey.indexOf('/posts') === 0) {
+      //   cardURL = `${baseURL}${cardKey}`;
+      //   console.log('cardLoader', cardKey, cardURL);
+      // }
+      loadURL(cardURL);
+    }
+  }
+
+  var calcHandlers = smartdown.defaultCalcHandlers;
+  const linkRules = [
+    {
+      prefix: '/posts/',
+      replace: baseURL + '/posts/',
+    },
+    {
+      prefix: '/pages/',
+      replace: baseURL + '/pages/',
+    },
+    {
+      prefix: '/assets/',
+      replace: baseURL + '/assets/',
+    },
+  ];
+
+
+
+  window.addEventListener(
+    'popstate',
+    function(event) {
+      console.log('popstate', event);
+      // const url = document.location.pathname;
+      // if (url.endsWith('/')) {
+      //   const newPath = url.replace(/\/$/, '.md');
+      //   // console.log('popstatex: ', url, newPath, current, window.location.hash);
+      //   if (current && url !== current) {
+      //     loadURL(newPath);
+      //   }
+      // }
+    },
+    false);
+  // window.addEventListener(
+  //   'hashchange',
+  //   function(event) {
+  //     console.log(
+  //       'hashchange document.location.pathname: ' + document.location.pathname,
+  //       JSON.stringify(event.state));
+  //   },
+  //   false);
+
+  smartdown.initialize(icons, `https://unpkg.com/smartdown/dist/`, loadInline, cardLoader, calcHandlers, linkRules);
+</script>
+
+  
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>

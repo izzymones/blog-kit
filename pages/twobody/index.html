@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>
+    Two Body Problem - Izzy&#39;s Blog
+    
+  </title>
+
+  <meta name="description" content="Mass is attracted to other mass through the force of gravity. This program simulates this by showing how two stars would move in a two dimensional space. Thi...">
+
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="/blog-kit/assets/vendor/bootstrap/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="/blog-kit/assets/vendor/fontawesome-free/css/all.min.css">
+
+  <link rel="stylesheet" href="/blog-kit/assets/main.css">
+  <link rel="canonical" href="https://izzymones.github.io/blog-kit/pages/twobody/">
+  <link rel="alternate" type="application/rss+xml" title="Izzy&#39;s Blog" href="/blog-kit/feed.xml">
+
+  
+  <link rel=stylesheet href="https://unpkg.com/smartdown/dist/lib/smartdown.css">
+<link rel=stylesheet href="https://unpkg.com/smartdown/dist/lib/fonts.css">
+<script type="text/javascript" src="https://unpkg.com/smartdown/dist/lib/smartdown.js">
+</script>
+<script type="text/javascript" src="https://unpkg.com/smartdown/dist/lib/calc_handlers.js"></script>
+<script type="text/x-smartdown" id="Home">
+Mass is attracted to other mass through the force of gravity. This program simulates this by showing how two stars would move in a two dimensional space. This is done using the formula $F= \frac{Gm_1m_2}{r^2}$ where $F$ is the attractive force between the two objects, $r$ is the distance between the centers of mass of the objects, and $m_1$ and $m_2$ are the objects' respective masses. This formula is used iteratively to change the velocity based on the other masses in the area. 
+It should be noted that the star that starts on the left has an upward starting velocity and the star that starts on the right has a downwards starting velocity. This makes them more likely to orbit instead of just colliding. 
+
+
+**Star Mass 1** [](:?mass1|number) [](:-mass1/1/50/1)
+
+**Star Mass 2** [](:?mass2|number) [](:-mass2/1/50/1)
+
+[Start](:=start=true) [Reset](:=reset=true)[Add Particle:](:Xparticle)
+
+```javascript /p5js/autoplay
+smartdown.setVariable('mass1',10);
+smartdown.setVariable('mass2',30);
+smartdown.setVariable('start',false);
+smartdown.setVariable('particle',false);
+let plocked = false;
+let s1locked = false;
+let s2locked = false;
+
+function starColor(mass) {
+    if (mass < 12.5) {
+        return [255, Math.floor(255 * mass/12.5), 0];
+    }
+    if (mass < 25) {
+        return [255,255, Math.floor(255*(mass-12.5)/12.5)];
+    } 
+    let value = Math.floor(255 * (25 - (mass - 25))/ 25);
+    return [value, value, 255];
+}
+
+class Particle {
+    constructor(x, y, u, v) {
+        this.t = 0;
+        this.m = 10;
+        this.pos = p5.createVector(x, y);
+        this.vel = p5.createVector(u, v);
+        this.history = [];
+    }
+
+    applyForce(force) {
+        this.vel.add(force);
+    }
+
+    update() {
+        this.history.push(this.pos);
+        this.t++;
+        this.pos.add(this.vel);
+    }
+  
+    render() {
+        p5.stroke(0);
+        p5.noFill();
+        p5.beginShape();
+        for (const v of this.history) {
+            p5.vertex(v.x, v.y);
+        }
+        p5.endShape();
+    
+        p5.fill(0);
+        p5.circle(this.pos.x, this.pos.y, 20);
+    }
+} 
+
+
+class Star extends Particle {
+    constructor(x, y, u, v, m) {
+        super(x, y, u, v);
+        this.m = m;
+    }
+  
+    attract(p) {
+        const force = p5.Vector.sub(this.pos, p.pos);
+        const magSq = force.magSq();
+        force.setMag(this.m * p.m / magSq);
+        return force;
+}
+  
+    render() {
+        p5.stroke(102);
+        p5.noFill();
+        p5.beginShape();
+        for (const v of this.history) {
+            p5.vertex(v.x, v.y);
+        }
+        p5.endShape();
+        p5.stroke(0);
+        p5.fill(starColor(this.m));
+        p5.circle(this.pos.x, this.pos.y, 40);
+    }
+}
+
+
+function reset(){
+    smartdown.setVariable('reset',false)
+    s1 = new Star((p5.width / 2)-60, p5.height / 2, 0, 1,env.mass1);
+    s2 = new Star((p5.width / 2)+60 , p5.height / 2, 0, -1,env.mass2);
+    p = new Particle((p5.width / 2), (p5.height / 2)+60, 0, 0);
+}
+
+
+p5.mousePressed = function() {
+    if (incircle(p)) {
+        plocked = true;
+    } 
+    if (incircle(s1)) {
+        s1locked = true;
+    }
+    if (incircle(s2)) {
+        s2locked = true;
+    }
+}
+
+
+p5.mouseReleased = function(){
+    plocked = false;
+    s1locked = false;
+    s2locked = false;
+}
+
+
+p5.mouseDragged = function() {
+    if (plocked) {
+        p.pos.x = p5.mouseX;
+        p.pos.y = p5.mouseY;
+    }
+    if (s1locked) {
+        s1.pos.x = p5.mouseX;
+        s1.pos.y = p5.mouseY;
+    }
+    if (s2locked) {
+        s2.pos.x = p5.mouseX;
+        s2.pos.y = p5.mouseY;
+    }
+}
+
+let widthPercent = 0.8;  // what percentage of the page width should the app get
+let heightPercent = 0.7; // what percentage of the page height should the app get
+
+p5.setup = function() {
+    p5.frameRate(30);
+    p5.createCanvas(widthPercent*window.innerWidth, heightPercent*window.innerHeight);
+    s1 = new Star((p5.width / 2)-60, p5.height / 2, 0, 1,env.mass1);
+    s2 = new Star((p5.width / 2)+60 , p5.height / 2, 0, -1,env.mass2);
+    p = new Particle((p5.width / 2) , (p5.height / 2)+60, 0, 0);
+    if (env.particle){
+        p = new Particle((p5.width / 2) , (p5.height / 2)+60, 0, 0);
+    }   
+    p5.noStroke();
+
+    }
+function incircle(circle) {
+    let deltaX = p5.mouseX - circle.pos.x;
+    let deltaY = p5.mouseY - circle.pos.y;
+    let distance = Math.sqrt(deltaX**2 + deltaY**2);
+    return distance < 10;
+}
+p5.draw = function() {
+    p5.background(100,75,100);
+    p5.frameRate(30);
+    p5.fill(0)
+    s1 = new Star(s1.pos.x, s1.pos.y, s1.vel.x, s1.vel.y, env.mass1);
+    s2 = new Star(s2.pos.x, s2.pos.y, s2.vel.x, s2.vel.y, env.mass2);
+    if (env.particle){
+        p = new Particle(p.pos.x, p.pos.y, p.vel.x, p.vel.y);
+    } else{
+        p = new Particle((p5.width / 2) , (p5.height / 2)+60, 0, 0);
+    }
+
+    if (env.start == true) {
+        s1.applyForce(s2.attract(s1));
+        s2.applyForce(s1.attract(s2));
+        p.applyForce(s1.attract(p));
+        p.applyForce(s2.attract(p));
+        s1.update();
+        s1.render();
+        s2.update();
+        s2.render();
+        if (env.particle){
+            p.update();
+            p.render();
+        }
+        if (env.reset) {
+            reset()
+        }
+    }else{
+        s1.render();
+        s2.render();
+    }
+    
+        
+
+
+
+}
+```
+
+</script>
+
+  
+
+  
+</head>
+
+
+<body>
+
+  <!-- Navigation -->
+
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+
+  <div class="container">
+    <a class="navbar-brand" href="/blog-kit/">  
+      <!-- <img src="/blog-kit/assets/images/wildthinksLogo.svg" height="30"> -->
+    </a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      Menu
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      
+      <ul class="navbar-nav ml-auto">
+      
+        <li class="nav-item">
+          <a class="nav-link" href="/blog-kit/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/blog-kit/pages/About/">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/blog-kit/posts">Blog</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+  <!-- Page Header -->
+
+
+
+
+<header id="header-wrapper" class="masthead" style="background-image: url('/blog-kit/img/bg-about.jpg')">
+
+
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+
+        <!-- test for a narrow header -->
+        
+        <div class="post-heading narrow-heading">
+        
+
+          <h1>Two Body Problem</h1>
+          
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+</header>
+
+
+
+  <div id="smartdown-outer-container"class="container-fluid smartdown-outer-container smartdown-theme-blogx">
+    <div class="row">
+      <div class="col-xs-12 smartdown-container" id="blog-content">
+      <!-- <div class="col-lg-8 col-md-10 mx-auto smartdown-container" id="blog-content"> -->
+
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <ul class="list-inline text-center">
+          
+          <li class="list-inline-item">
+            <a href="mailto:izzymones@gmail.com">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="far fa-envelope fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          
+          
+          
+          <li class="list-inline-item">
+            <a href="https://github.com/izzymones">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+        </ul>
+        <p class="copyright text-muted">Copyright &copy; Isidore Mones 2024</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/blog-kit/assets/vendor/startbootstrap-clean-blog/js/scripts.js"></script>
+
+<script src="/blog-kit/assets/scripts.js"></script>
+
+
+
+
+  
+  <script>
+  /* global smartdown */
+  var baseURL = '/blog-kit/';
+  var icons = {
+    'hypercube': `/assets/images/Hypercube.svg`,
+    'StalactiteStalagmite': `/assets/images/StalactiteStalagmite.svg`
+  };
+
+  var multiparts = null;
+  var current = null;
+
+
+  function cardLoaded(url, cardKeySubhash, sourceText) {
+    /* eslint no-invalid-this: 0 */
+    sourceText = sourceText.trim();
+    multiparts = smartdown.partitionMultipart(sourceText);
+
+    if (url.endsWith('.md')) {
+      const newPath = url.replace(/\.md$/, '/');
+      current = newPath;
+      history.pushState(null, null, newPath);
+    }
+
+    var output = document.getElementById('blog-content');
+    smartdown.setHome(multiparts._default_, output, function() {
+      document.body.scrollTop = 0; // For Chrome, Safari and Opera
+      document.documentElement.scrollTop = 0; // For IE and Firefox
+
+      if (cardKeySubhash) {
+        const target = document.getElementById(cardKeySubhash);
+        if (target) {
+          target.scrollIntoView();
+        }
+      }
+
+      smartdown.startAutoplay(output);
+    });
+  }
+
+  function loadURL(url) {
+    var oReq = new XMLHttpRequest();
+    let cardKeySubhash = null;
+    const hashPos = url.indexOf('#');
+    if (hashPos >= 0) {
+      cardKeySubhash = url.slice(hashPos + 1);
+    }
+
+    oReq.addEventListener('load', function() {
+      cardLoaded(url, cardKeySubhash, this.responseText);
+    });
+    oReq.open('GET', url);
+    oReq.send();
+  }
+
+  function loadInline() {
+    smartdown.loadCardsFromDocumentScripts();
+    var s = smartdown.smartdownScripts[0];
+
+    cardLoaded(window.location.href, window.location.hash.slice(1), s.text);
+  }
+
+  function cardLoader(cardKey) {
+    console.log('cardLoader', cardKey);
+    var part = multiparts[cardKey];
+    if (part) {
+      var output = document.getElementById('blog-content');
+      smartdown.setHome(part, output, function() {
+        smartdown.startAutoplay(output);
+      });
+    }
+    else {
+      var cardURL = cardKey;
+      if (cardKey.indexOf('http') === 0) {
+        cardURL = cardKey;
+      }
+      else {
+        const expanded = smartdown.expandHrefWithLinkRules(cardURL);
+        // console.log('cardloader', cardURL, expanded);
+        cardURL = expanded;
+      }
+      // else if (cardKey.indexOf('/posts') === 0) {
+      //   cardURL = `${baseURL}${cardKey}`;
+      //   console.log('cardLoader', cardKey, cardURL);
+      // }
+      loadURL(cardURL);
+    }
+  }
+
+  var calcHandlers = smartdown.defaultCalcHandlers;
+  const linkRules = [
+    {
+      prefix: '/posts/',
+      replace: baseURL + '/posts/',
+    },
+    {
+      prefix: '/pages/',
+      replace: baseURL + '/pages/',
+    },
+    {
+      prefix: '/assets/',
+      replace: baseURL + '/assets/',
+    },
+  ];
+
+
+
+  window.addEventListener(
+    'popstate',
+    function(event) {
+      console.log('popstate', event);
+      // const url = document.location.pathname;
+      // if (url.endsWith('/')) {
+      //   const newPath = url.replace(/\/$/, '.md');
+      //   // console.log('popstatex: ', url, newPath, current, window.location.hash);
+      //   if (current && url !== current) {
+      //     loadURL(newPath);
+      //   }
+      // }
+    },
+    false);
+  // window.addEventListener(
+  //   'hashchange',
+  //   function(event) {
+  //     console.log(
+  //       'hashchange document.location.pathname: ' + document.location.pathname,
+  //       JSON.stringify(event.state));
+  //   },
+  //   false);
+
+  smartdown.initialize(icons, `https://unpkg.com/smartdown/dist/`, loadInline, cardLoader, calcHandlers, linkRules);
+</script>
+
+  
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>
